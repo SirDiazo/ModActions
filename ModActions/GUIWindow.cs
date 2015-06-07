@@ -111,7 +111,16 @@ namespace ModActions
                             foreach (Part p in parts)
                             {
                                 errLine = "8";
-                                if (p.Modules.Contains(selectingParts))
+                                bool addThisPM = false;
+                                foreach(PartModule pm3 in p.Modules)
+                                {
+                                    if(StaticMethods.pmTypes[selectingParts].IsAssignableFrom(pm3.GetType()))
+                                    {
+                                        addThisPM = true;
+                                    }
+                                }
+                                //if (p.Modules.Contains(selectingParts))
+                                if(addThisPM)
                                 {
                                     errLine = "9";
                                     partScreenPos.Add(cameraPos.WorldToScreenPoint(p.transform.position));
@@ -195,7 +204,7 @@ namespace ModActions
                 {
                     
                     errLine = "5";
-                    GUI.Label(new Rect(5, 5, 500, 20), "Select a part on the vessel, or a mod below to see its associated mods:", thisSkin.label);
+                    GUI.Label(new Rect(5, 5, 500, 20), "Select a part on the vessel, or a mod below to see its associated parts:", thisSkin.label);
                     for (int iVert = 1; iVert <= 20; iVert++)
                     {
                         for (int iHoriz = 1; iHoriz <= 5; iHoriz++)
@@ -405,7 +414,17 @@ namespace ModActions
             {
                 foreach (ModActionData modData in StaticMethods.AllActionsList)
                 {
-                    if (selectedPart.Modules.Contains(modData.ModuleName))
+                    Type modDataType2 = StaticMethods.pmTypes[modData.ModuleName];
+                    bool addThisModData = false;
+                    //if (selectedPart.Modules.Contains(modData.ModuleName))
+                    foreach(PartModule pm in selectedPart.Modules)
+                    {
+                        if (modDataType2.IsAssignableFrom(pm.GetType()))
+                        {
+                            addThisModData = true;
+                        }
+                    }
+                    if(addThisModData)
                     {
                         if (!modNames.Contains(modData.Name))
                         {

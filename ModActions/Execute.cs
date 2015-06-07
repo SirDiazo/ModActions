@@ -10,7 +10,7 @@ namespace ModActions
     {
         public static void ExectueAction(ModActionData action, PartModule pm, KSPActionParam param, string val)
         {
-            Debug.Log("Action trigger");
+            //Debug.Log("Action trigger");
             switch (action.Identifier)
             {
                 case 1:
@@ -43,26 +43,10 @@ namespace ModActions
                         }
                         break;
                     }
-                case 4: //stock engines, set thrust limit
-                    {
-                        float percent;
-                        if (float.TryParse(val, out percent))
-                        {
-                            foreach (PartModule pm2 in pm.part.Modules)
-                            {
-                                if (pm2 is ModuleEnginesFX)
-                                {
-                                    ModuleEnginesFX eng = (ModuleEnginesFX)pm2;
-                                    eng.thrustPercentage = percent;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Debug.Log("Set engine thrust limit fail, non-numeric number received.");
-                        }
-                        break;
-                    }
+                //case 4: //unassigned
+                    //{
+                        
+                    //}
 
 
             } //close switch bracket

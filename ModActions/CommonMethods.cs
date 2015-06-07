@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.IO;
+using System.Reflection;
 
 namespace ModActions
 {
@@ -81,11 +82,25 @@ namespace ModActions
 
                     }
                 }
-                StaticMethods.ListPopulated = true;
-                foreach (ModActionData mData in StaticMethods.AllActionsList) //for debugging, lists all actions
+                StaticMethods.pmTypes = new Dictionary<string, Type>();
+                foreach (AssemblyLoader.LoadedAssembly Asm in AssemblyLoader.loadedAssemblies)
                 {
-                    Debug.Log("test " + mData.ToString());
+                    Type[] typeList = Asm.assembly.GetTypes();
+                    foreach(Type t in typeList)
+                    {
+                        if(t.IsSubclassOf(typeof(PartModule)) && !StaticMethods.pmTypes.ContainsKey(t.Name))
+                        {
+                            StaticMethods.pmTypes.Add(t.Name, t); 
+                        }
+                    }
                 }
+                StaticMethods.ListPopulated = true;
+                
+                //foreach (KeyValuePair<string,Type> mData in StaticMethods.pmTypes) //for debugging, lists all actions
+                //{
+                //    Debug.Log("8");
+                //    Debug.Log("test " + mData.Key + " " + mData.Value.Name);
+                //}
             }
         }
     }
@@ -156,6 +171,7 @@ namespace ModActions
             settings.Save(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.cfg");
             if (ourWin != null)
             {
+                ourWin.drawWin = false;
                 ourWin.Kill();
             }
             ourWin = null;
@@ -193,7 +209,7 @@ namespace ModActions
             {
                 if (ourWin != null)
                 {
-
+                    ourWin.drawWin = false;
                     ourWin.Kill();
                 }
                 ourWin = null;
@@ -272,6 +288,7 @@ namespace ModActions
                     {
                         if (ourWin != null)
                         {
+                            ourWin.drawWin = false;
                             ourWin.Kill();
                             ourWin = null;
                         }
@@ -302,6 +319,7 @@ namespace ModActions
             {
                 if (ourWin != null)
                 {
+                    ourWin.drawWin = false;
                     ourWin.Kill();
                     ourWin = null;
                 }
@@ -325,6 +343,7 @@ namespace ModActions
             settings.Save(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.cfg");
             if (ourWin != null)
             {
+                ourWin.drawWin = false;
                 ourWin.Kill();
             }
             ourWin = null;
@@ -403,6 +422,7 @@ namespace ModActions
     {
         public static bool ListPopulated = false;
         public static List<ModActionData> AllActionsList;
+        public static Dictionary<string, Type> pmTypes;
     }
 
 
