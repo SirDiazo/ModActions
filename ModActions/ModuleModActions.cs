@@ -27,6 +27,10 @@ namespace ModActions
                 {
                     this.Actions.Where(a => a.name == "Action" + i).First().active = true;
                 }
+                else
+                {
+                    this.Actions.Where(a => a.name == "Action" + i).First().active = false;
+                }
             }
         }
         

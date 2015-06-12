@@ -86,21 +86,20 @@ namespace ModActions
                 foreach (AssemblyLoader.LoadedAssembly Asm in AssemblyLoader.loadedAssemblies)
                 {
                     Type[] typeList = Asm.assembly.GetTypes();
-                    foreach(Type t in typeList)
+                    foreach (Type t in typeList)
                     {
-                        if(t.IsSubclassOf(typeof(PartModule)) && !StaticMethods.pmTypes.ContainsKey(t.Name))
+                        if (t.IsSubclassOf(typeof(PartModule)) && !StaticMethods.pmTypes.ContainsKey(t.Name))
                         {
-                            StaticMethods.pmTypes.Add(t.Name, t); 
+                            StaticMethods.pmTypes.Add(t.Name, t);
                         }
                     }
                 }
                 StaticMethods.ListPopulated = true;
-                
-                //foreach (KeyValuePair<string,Type> mData in StaticMethods.pmTypes) //for debugging, lists all actions
-                //{
-                //    Debug.Log("8");
-                //    Debug.Log("test " + mData.Key + " " + mData.Value.Name);
-                //}
+
+                foreach (ModActionData md in StaticMethods.AllActionsList) //for debugging, lists all actions
+                {
+                    Debug.Log("ModAction " + md.ToString());
+                }
             }
         }
     }
@@ -142,7 +141,7 @@ namespace ModActions
             else
             {
                 //now using stock toolbar as fallback
-                ModActsEditorButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActs/Btn", false));
+                ModActsEditorButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActions/BtnStock", false));
             }
         }
 
@@ -256,7 +255,7 @@ namespace ModActions
         Part lastSelectedPart;
         bool ShowModActs;
         IButton MABtn;
-        ApplicationLauncherButton ModActsEditorButton;
+        ApplicationLauncherButton ModActsFlightButton;
         float lastUpdateTime;
 
         public void Start()
@@ -298,33 +297,50 @@ namespace ModActions
             else
             {
                 //now using stock toolbar as fallback
-                ModActsEditorButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.FLIGHT, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActs/Btn", false));
+                ModActsFlightButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.FLIGHT, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActions/BtnStock", false));
             }
         }
 
         public void onStockToolbarClick()
         {
-            ShowModActs = !ShowModActs;
-            if (ShowModActs)
+            string errLine = "1";
+            try
             {
-                if (ourWin != null)
+                errLine = "2";
+                ShowModActs = !ShowModActs;
+                errLine = "3";
+                if (ShowModActs)
                 {
-                    ourWin = new MainGUIWindow(FlightGlobals.ActiveVessel.Parts, winTop, winLeft);
+                    errLine = "4";
+                    if (ourWin == null)
+                    {
+                        Debug.Log("make win");
+                        errLine = "5";
+                        ourWin = new MainGUIWindow(FlightGlobals.ActiveVessel.Parts, winTop, winLeft);
+                    }
+                    errLine = "6";
+                    ourWin.SetPart(null);
+                    errLine = "7";
+                    lastSelectedPart = null;
+                    errLine = "8";
+                    ourWin.drawWin = ShowModActs;
                 }
-                ourWin.SetPart(null);
-                lastSelectedPart = null;
-                ourWin.drawWin = ShowModActs;
+                else
+                {
+                    errLine = "9";
+                    if (ourWin != null)
+                    {
+                        errLine = "10";
+                        ourWin.drawWin = false;
+                        ourWin.Kill();
+                        ourWin = null;
+                    }
+                }
             }
-            else
+            catch (Exception e)
             {
-                if (ourWin != null)
-                {
-                    ourWin.drawWin = false;
-                    ourWin.Kill();
-                    ourWin = null;
-                }
+                Debug.Log("ModActs StockBtnClick " + errLine + " " + e);
             }
-
         }
 
         public void DummyVoid()
@@ -353,7 +369,7 @@ namespace ModActions
             }
             else
             {
-                ApplicationLauncher.Instance.RemoveModApplication(ModActsEditorButton);
+                ApplicationLauncher.Instance.RemoveModApplication(ModActsFlightButton);
             }
         }
 

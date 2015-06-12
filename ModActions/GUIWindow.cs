@@ -112,13 +112,17 @@ namespace ModActions
                             {
                                 errLine = "8";
                                 bool addThisPM = false;
+                                errLine = "8a";
                                 foreach(PartModule pm3 in p.Modules)
                                 {
+                                    errLine = "8b";
                                     if(StaticMethods.pmTypes[selectingParts].IsAssignableFrom(pm3.GetType()))
                                     {
+                                        errLine = "8c";
                                         addThisPM = true;
                                     }
                                 }
+                                errLine = "8d";
                                 //if (p.Modules.Contains(selectingParts))
                                 if(addThisPM)
                                 {
@@ -175,8 +179,8 @@ namespace ModActions
                 if (GUI.Button(new Rect(300, 5, 100, 20), "Clear Selection", thisSkin.button))
                 {
                     SetPart(null);
-                    selectingParts = "";
-                    selectingPartsName = "";
+                    selectingParts = null;
+                    selectingPartsName = null;
                 }
                 if (includeSymmetryParts)
                 {
