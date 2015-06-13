@@ -113,10 +113,10 @@ namespace ModActions
                                 errLine = "8";
                                 bool addThisPM = false;
                                 errLine = "8a";
-                                foreach(PartModule pm3 in p.Modules)
+                                foreach (PartModule pm3 in p.Modules)
                                 {
                                     errLine = "8b";
-                                    if(StaticMethods.pmTypes[selectingParts].IsAssignableFrom(pm3.GetType()))
+                                    if (StaticMethods.pmTypes[selectingParts].IsAssignableFrom(pm3.GetType()))
                                     {
                                         errLine = "8c";
                                         addThisPM = true;
@@ -124,7 +124,7 @@ namespace ModActions
                                 }
                                 errLine = "8d";
                                 //if (p.Modules.Contains(selectingParts))
-                                if(addThisPM)
+                                if (addThisPM)
                                 {
                                     errLine = "9";
                                     partScreenPos.Add(cameraPos.WorldToScreenPoint(p.transform.position));
@@ -193,8 +193,8 @@ namespace ModActions
                     thisSkin.button.hover.background = buttonRed;
                 }
                 errLine = "3";
-                
-                
+
+
                 if (GUI.Button(new Rect(400, 5, 100, 20), includeSymmetryParts ? "Symmetry: Yes" : "Symmetry: No", thisSkin.button))
                 {
                     includeSymmetryParts = !includeSymmetryParts;
@@ -206,39 +206,48 @@ namespace ModActions
 
                 if (selType == SelectType.NoPart)
                 {
-                    
+
                     errLine = "5";
                     GUI.Label(new Rect(5, 5, 500, 20), "Select a part on the vessel, or a mod below to see its associated parts:", thisSkin.label);
-                    for (int iVert = 1; iVert <= 20; iVert++)
+                    if (allModNames.Count > 0)
                     {
-                        for (int iHoriz = 1; iHoriz <= 5; iHoriz++)
+                        for (int iVert = 1; iVert <= 20; iVert++)
                         {
-                            int buttonCount = iHoriz + ((iVert - 1) * 5);
-                            if (allModNames.ElementAt(buttonCount - 1) == selectingPartsName)
+                            for (int iHoriz = 1; iHoriz <= 5; iHoriz++)
                             {
-                                thisSkin.button.normal.background = buttonGreen;
-                                thisSkin.button.hover.background = buttonGreen;
-                            }
-                            else
-                            {
+                                int buttonCount = iHoriz + ((iVert - 1) * 5);
+                                if (allModNames.ElementAt(buttonCount - 1) == selectingPartsName)
+                                {
+                                    thisSkin.button.normal.background = buttonGreen;
+                                    thisSkin.button.hover.background = buttonGreen;
+                                }
+                                else
+                                {
+                                    thisSkin.button.normal.background = buttonGray;
+                                    thisSkin.button.hover.background = buttonGray;
+                                }
+                                if (GUI.Button(new Rect((iHoriz - 1) * 100, (iVert) * 20, 100, 20), allModNames.ElementAt(buttonCount - 1), thisSkin.button))
+                                {
+                                    selectingParts = StaticMethods.AllActionsList.Where(md => md.Name == allModNames.ElementAt(buttonCount - 1)).First().ModuleName;
+                                    selectingPartsName = allModNames.ElementAt(buttonCount - 1);
+                                }
                                 thisSkin.button.normal.background = buttonGray;
                                 thisSkin.button.hover.background = buttonGray;
-                            }
-                            if (GUI.Button(new Rect((iHoriz - 1) * 100, (iVert) * 20, 100, 20), allModNames.ElementAt(buttonCount - 1), thisSkin.button))
-                            {
-                                selectingParts = StaticMethods.AllActionsList.Where(md => md.Name == allModNames.ElementAt(buttonCount - 1)).First().ModuleName;
-                                selectingPartsName = allModNames.ElementAt(buttonCount - 1);
-                            }
-                            thisSkin.button.normal.background = buttonGray;
-                                thisSkin.button.hover.background = buttonGray;
-                            
 
-                            if (buttonCount == allModNames.Count())
-                            {
-                                goto Breakout; //all buttons drawn, need to breakout of the loop
+
+                                if (buttonCount == allModNames.Count())
+                                {
+                                    goto Breakout; //all buttons drawn, need to breakout of the loop
+                                }
                             }
                         }
                     }
+                    else
+                    {
+                        GUI.Label(new Rect(5, 35, 500, 20), "Critial error, no actions loaded.", thisSkin.label);
+                        GUI.Label(new Rect(5, 65, 500, 20), "Check your installation path and/or file a bug report.", thisSkin.label);
+                    }
+
                 }
                 else if (selType == SelectType.None) //display our actions list
                 {
@@ -246,7 +255,7 @@ namespace ModActions
                     //Debug.Log("1");
                     for (int i = 1; i <= 30; i++)
                     {
-                        errLine = "6a "+ i;
+                        errLine = "6a " + i;
                         // Debug.Log("2");
                         GUI.Label(new Rect(0, 1 + (20 * (i - 1)), 20, 20), i.ToString() + ":", thisSkin.label);
                         //Debug.Log("3");
@@ -421,14 +430,14 @@ namespace ModActions
                     Type modDataType2 = StaticMethods.pmTypes[modData.ModuleName];
                     bool addThisModData = false;
                     //if (selectedPart.Modules.Contains(modData.ModuleName))
-                    foreach(PartModule pm in selectedPart.Modules)
+                    foreach (PartModule pm in selectedPart.Modules)
                     {
                         if (modDataType2.IsAssignableFrom(pm.GetType()))
                         {
                             addThisModData = true;
                         }
                     }
-                    if(addThisModData)
+                    if (addThisModData)
                     {
                         if (!modNames.Contains(modData.Name))
                         {

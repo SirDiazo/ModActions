@@ -52,7 +52,7 @@ namespace ModActions
     {
         public void Start()
         {
-            Debug.Log("ModActions Ver. 0.1 Starting.....");
+            Debug.Log("ModActions Ver. 0.3 Starting.....");
             if (!StaticMethods.ListPopulated) //populate our list if this is first load
             {
                 StaticMethods.AllActionsList = new List<ModActionData>();
@@ -64,16 +64,24 @@ namespace ModActions
                         ConfigNode loadingNode = ConfigNode.Load(str);
                         foreach (AssemblyLoader.LoadedAssembly Asm in AssemblyLoader.loadedAssemblies)
                         {
-                            if (Asm.dllName == loadingNode.GetValue("assemblyname"))
+                            Debug.Log(loadingNode.GetValue("assemblyname"));
+                            if (Asm.dllName == loadingNode.GetValue("assemblyname") || "Stock" == loadingNode.GetValue("assemblyname"))
                             {
+                                Debug.Log("Assembly name match");
                                 string modName = loadingNode.GetValue("modname");
+                                Debug.Log(modName);
                                 string pmName = loadingNode.GetValue("pmname");
+                                Debug.Log(pmName);
                                 foreach (ConfigNode actNode in loadingNode.nodes)
                                 {
+                                    Debug.Log("Node Found");
                                     string actgroup = actNode.GetValue("name");
+                                    Debug.Log(actgroup);
                                     foreach (ConfigNode typeNode in actNode.nodes)
                                     {
+                                        Debug.Log("Action Found");
                                         StaticMethods.AllActionsList.Add(new ModActionData() { Identifier = int.Parse(typeNode.GetValue("ident")), ModuleName = pmName, Description = "", Name = modName, ActionGroup = actgroup, ActionActual = typeNode.GetValue("name"), ActionValue = typeNode.GetValue("data"), ActionDataType = typeNode.GetValue("ActionData") });
+                                        Debug.Log(int.Parse(typeNode.GetValue("ident")) + "|"+ typeNode.GetValue("name") + "|" + typeNode.GetValue("data") + "|" + typeNode.GetValue("ActionData"));
                                     }
                                 }
                                 loadingNode.SetValue("assemblyname", "gibberishToPreventThisFileFromLoadingTwice");
