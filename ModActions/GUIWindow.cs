@@ -283,7 +283,10 @@ namespace ModActions
                                 actionGroupNames.Clear();
                                 foreach (ModActionData md in StaticMethods.AllActionsList.Where(d => d.Name == dataPM.modActionsList[i].Name))
                                 {
-                                    actionGroupNames.Add(md.ActionGroup);
+                                    if (!actionGroupNames.Contains(md.ActionGroup))
+                                    {
+                                        actionGroupNames.Add(md.ActionGroup);
+                                    }
                                 }
                                 savedScrollLocation = MainWinScroll;
                                 MainWinScroll = new Vector2(0, 0);
@@ -297,7 +300,10 @@ namespace ModActions
                                 actionGroupNames.Clear();
                                 foreach (ModActionData md in StaticMethods.AllActionsList.Where(d => d.Name == dataPM.modActionsList[i].Name && d.ActionGroup == dataPM.modActionsList[i].ActionGroup))
                                 {
-                                    actionGroupNames.Add(md.ActionActual);
+                                    if (!actionGroupNames.Contains(md.ActionActual))
+                                    {
+                                        actionGroupNames.Add(md.ActionActual);
+                                    }
                                 }
                                 //Debug.Log("count " + actionGroupNames.Count);
                                 savedScrollLocation = MainWinScroll;
@@ -450,6 +456,8 @@ namespace ModActions
             modNames.Insert(0, "Clear Action"); //clear action always comes first
 
         }
+
+       
 
         public void SelectModName(String mName, int selID) //click on second column
         {

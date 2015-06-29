@@ -6,6 +6,21 @@ using UnityEngine;
 
 namespace ModActions
 {
+
+    //class VesselModTest : VesselModule
+    //{
+    //    //public void Update()
+    //    //{
+    //    //    Debug.Log("test");
+    //    //}
+
+    //    public void OnSave(ConfigNode node)
+    //    {
+    //        Debug.Log("saving");
+            
+    //        node.AddValue("test val", "testingthisout");
+    //    }
+    //}
     class ModuleModActions : PartModule
     {
         

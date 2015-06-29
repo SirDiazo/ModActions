@@ -64,24 +64,16 @@ namespace ModActions
                         ConfigNode loadingNode = ConfigNode.Load(str);
                         foreach (AssemblyLoader.LoadedAssembly Asm in AssemblyLoader.loadedAssemblies)
                         {
-                            Debug.Log(loadingNode.GetValue("assemblyname"));
                             if (Asm.dllName == loadingNode.GetValue("assemblyname") || "Stock" == loadingNode.GetValue("assemblyname"))
                             {
-                                Debug.Log("Assembly name match");
                                 string modName = loadingNode.GetValue("modname");
-                                Debug.Log(modName);
                                 string pmName = loadingNode.GetValue("pmname");
-                                Debug.Log(pmName);
                                 foreach (ConfigNode actNode in loadingNode.nodes)
                                 {
-                                    Debug.Log("Node Found");
                                     string actgroup = actNode.GetValue("name");
-                                    Debug.Log(actgroup);
                                     foreach (ConfigNode typeNode in actNode.nodes)
                                     {
-                                        Debug.Log("Action Found");
                                         StaticMethods.AllActionsList.Add(new ModActionData() { Identifier = int.Parse(typeNode.GetValue("ident")), ModuleName = pmName, Description = "", Name = modName, ActionGroup = actgroup, ActionActual = typeNode.GetValue("name"), ActionValue = typeNode.GetValue("data"), ActionDataType = typeNode.GetValue("ActionData") });
-                                        Debug.Log(int.Parse(typeNode.GetValue("ident")) + "|"+ typeNode.GetValue("name") + "|" + typeNode.GetValue("data") + "|" + typeNode.GetValue("ActionData"));
                                     }
                                 }
                                 loadingNode.SetValue("assemblyname", "gibberishToPreventThisFileFromLoadingTwice");
@@ -104,10 +96,10 @@ namespace ModActions
                 }
                 StaticMethods.ListPopulated = true;
 
-                foreach (ModActionData md in StaticMethods.AllActionsList) //for debugging, lists all actions
-                {
-                    Debug.Log("ModAction " + md.ToString());
-                }
+                //foreach (ModActionData md in StaticMethods.AllActionsList) //for debugging, lists all actions
+                //{
+                //    Debug.Log("ModAction " + md.ToString());
+                //}
             }
         }
     }
