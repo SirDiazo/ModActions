@@ -30,6 +30,8 @@ namespace ModActions
         string selectingParts;
         string selectingPartsName;
         Camera cameraPos;
+        bool copyMode;
+        Part copyPart;
 
 
         public MainGUIWindow(List<Part> prts, float winTop, float winLeft) //effectively our Start() method
@@ -173,10 +175,10 @@ namespace ModActions
                 thisSkin.label.fontStyle = FontStyle.Bold;
                 GUI.Label(new Rect(10, 5, 100, 20), "Description", thisSkin.label);
                 GUI.Label(new Rect(110, 5, 100, 20), "Mod", thisSkin.label);
-                GUI.Label(new Rect(210, 5, 100, 20), "Action Type", thisSkin.label);
+                //GUI.Label(new Rect(210, 5, 100, 20), "Action Type", thisSkin.label); //moved other stuff 50 pixels
                 thisSkin.label.fontStyle = FontStyle.Normal;
                 errLine = "2";
-                if (GUI.Button(new Rect(300, 5, 100, 20), "Clear Selection", thisSkin.button))
+                if (GUI.Button(new Rect(250, 5, 100, 20), "Clear Selection", thisSkin.button))
                 {
                     SetPart(null);
                     selectingParts = null;
@@ -195,13 +197,37 @@ namespace ModActions
                 errLine = "3";
 
 
-                if (GUI.Button(new Rect(400, 5, 100, 20), includeSymmetryParts ? "Symmetry: Yes" : "Symmetry: No", thisSkin.button))
+                if (GUI.Button(new Rect(350, 5, 100, 20), includeSymmetryParts ? "Symmetry: Yes" : "Symmetry: No", thisSkin.button))
                 {
                     includeSymmetryParts = !includeSymmetryParts;
                 }
                 thisSkin.button.normal.background = buttonGray;
                 thisSkin.button.hover.background = buttonGray;
                 errLine = "4";
+
+                if (copyMode)
+                {
+                    thisSkin.button.normal.background = buttonRed;
+                    thisSkin.button.hover.background = buttonRed;
+                }
+                
+                errLine = "4a";
+                if (GUI.Button(new Rect(450, 5, 80, 20), copyMode ? "Copying" : "Copy?", thisSkin.button))
+                {
+                    if(!copyMode)
+                    {
+                        copyPart = selectedPart;
+                        copyMode = true;
+                    }
+                    else
+                    {
+                        copyPart = null;
+                        copyMode = false;
+                    }
+                }
+                thisSkin.button.normal.background = buttonGray;
+                thisSkin.button.hover.background = buttonGray;
+
                 MainWinScroll = GUI.BeginScrollView(new Rect(5, 25, 520, 105), MainWinScroll, new Rect(0, 0, 500, 600));
 
                 if (selType == SelectType.NoPart)
@@ -309,6 +335,7 @@ namespace ModActions
                                 savedScrollLocation = MainWinScroll;
                                 MainWinScroll = new Vector2(0, 0);
                             }
+                            Color GUIbackup = GUI.backgroundColor;
                             if (dataPM.modActionsList[i].ActionDataType == "no")
                             {
                                 errLine = "6f";//leave blank as we show nothing if this colum stays blank
@@ -317,7 +344,7 @@ namespace ModActions
                             {
                                 errLine = "6g";
                                 float tempVal;
-                                Color GUIbackup = GUI.backgroundColor;
+                                //Color GUIbackup = GUI.backgroundColor;
                                 if (float.TryParse(dataPM.modActionsList[i].ActionValue, out tempVal))
                                 {
                                     //blank, do nothing
@@ -326,9 +353,31 @@ namespace ModActions
                                 {
                                     GUI.backgroundColor = new Color(1, 0, 0);
                                 }
+                            }
+                            else if (dataPM.modActionsList[i].ActionDataType == "int")
+                            {
+                                errLine = "6g";
+                                int tempVal;
+                                //Color GUIbackup = GUI.backgroundColor;
+                                if (int.TryParse(dataPM.modActionsList[i].ActionValue, out tempVal))
+                                {
+                                    //blank, do nothing
+                                }
+                                else
+                                {
+                                    GUI.backgroundColor = new Color(1, 0, 0);
+                                }
+                            }
 
+                            if (dataPM.modActionsList[i].ActionDataType != "no")
+                            {
+                                string origString = string.Copy(dataPM.modActionsList[i].ActionValue);
                                 dataPM.modActionsList[i].ActionValue = GUI.TextField(new Rect(400, 0 + (20 * (i - 1)), 100, 20), dataPM.modActionsList[i].ActionValue, thisSkin.textField);
                                 GUI.backgroundColor = GUIbackup;
+                                if (origString != dataPM.modActionsList[i].ActionValue)
+                                {
+                                    SyncSymmetry(dataPM.part, dataPM.modActionsList[i], i);
+                                }
                             }
                             //Debug.Log("7");
                         }
@@ -414,6 +463,35 @@ namespace ModActions
 
                 dataPM = p.Modules.OfType<ModuleModActions>().First();
                 RefreshModNames(true);
+                if(copyMode && copyPart != null)
+                {
+                    dataPM.modActionsList.Clear();
+                    ModuleModActions copySource = (ModuleModActions) copyPart.Modules["ModuleModActions"];
+                    foreach(KeyValuePair<int,ModActionData> kvp in copySource.modActionsList)
+                    {
+                        if (dataPM.part.Modules.Contains(kvp.Value.ModuleName))
+                        {
+                            dataPM.modActionsList.Add(kvp.Key, new ModActionData(kvp.Value));
+                        }
+                    }
+                    if(includeSymmetryParts)
+                    {
+                        foreach(Part p3 in dataPM.part.symmetryCounterparts)
+                        {
+                            ModuleModActions symDataPM = (ModuleModActions)p3.Modules["ModuleModActions"];
+                            symDataPM.modActionsList.Clear();
+                            foreach (KeyValuePair<int, ModActionData> kvp in copySource.modActionsList)
+                            {
+                                if (symDataPM.part.Modules.Contains(kvp.Value.ModuleName))
+                                {
+                                    symDataPM.modActionsList.Add(kvp.Key, new ModActionData(kvp.Value));
+                                }
+                            }
+                        }
+                    }
+                }
+                copyMode = false;
+                copyPart = null;
                 selType = SelectType.None;
             }
             else

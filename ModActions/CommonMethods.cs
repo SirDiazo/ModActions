@@ -52,7 +52,7 @@ namespace ModActions
     {
         public void Start()
         {
-            Debug.Log("ModActions Ver. 0.3 Starting.....");
+            Debug.Log("ModActions Ver. 1.0 Starting.....");
             if (!StaticMethods.ListPopulated) //populate our list if this is first load
             {
                 StaticMethods.AllActionsList = new List<ModActionData>();
@@ -161,18 +161,20 @@ namespace ModActions
 
         public void OnDisable()
         {
-            winTop = ourWin.MainWindowRect.y;
-            winLeft = ourWin.MainWindowRect.x;
+           
+            
+            if (ourWin != null)
+            {
+                winTop = ourWin.MainWindowRect.y;
+                winLeft = ourWin.MainWindowRect.x;
+                ourWin.drawWin = false;
+                ourWin.Kill();
+            }
             settings.RemoveValue("EdWinTop");
             settings.RemoveValue("EdWinLeft");
             settings.AddValue("EdWinTop", winTop);
             settings.AddValue("EdWinLeft", winLeft);
             settings.Save(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.cfg");
-            if (ourWin != null)
-            {
-                ourWin.drawWin = false;
-                ourWin.Kill();
-            }
             ourWin = null;
             if (ToolbarManager.ToolbarAvailable) //if toolbar loaded, destroy button on leaving scene
             {
@@ -314,7 +316,7 @@ namespace ModActions
                     errLine = "4";
                     if (ourWin == null)
                     {
-                        Debug.Log("make win");
+                        //Debug.Log("make win");
                         errLine = "5";
                         ourWin = new MainGUIWindow(FlightGlobals.ActiveVessel.Parts, winTop, winLeft);
                     }
@@ -350,27 +352,36 @@ namespace ModActions
 
         public void OnDisable()
         {
-            winTop = ourWin.MainWindowRect.y;
-            winLeft = ourWin.MainWindowRect.x;
+
+           
+            
+            if (ourWin != null)
+            {
+                Debug.Log("ModActions Flight Dis b");
+                winTop = ourWin.MainWindowRect.y;
+                winLeft = ourWin.MainWindowRect.x;
+                ourWin.drawWin = false;
+                ourWin.Kill();
+            }
             settings.RemoveValue("FltWinTop");
             settings.RemoveValue("FltWinLeft");
             settings.AddValue("FltWinTop", winTop);
             settings.AddValue("FltWinLeft", winLeft);
+            Debug.Log("ModActions Flight Dis A");
             settings.Save(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.cfg");
-            if (ourWin != null)
-            {
-                ourWin.drawWin = false;
-                ourWin.Kill();
-            }
+            Debug.Log("ModActions Flight Dis c");
             ourWin = null;
             if (ToolbarManager.ToolbarAvailable) //if toolbar loaded, destroy button on leaving scene
             {
+                Debug.Log("ModActions Flight Dis d");
                 MABtn.Destroy();
             }
             else
             {
+                Debug.Log("ModActions Flight Dis e");
                 ApplicationLauncher.Instance.RemoveModApplication(ModActsFlightButton);
             }
+            Debug.Log("ModActions Flight Dis f");
         }
 
 

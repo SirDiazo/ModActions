@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace ModActions
 {
-    public static class Execute
+    public static class Execute 
     {
         public static void ExectueAction(ModActionData action, PartModule pm, KSPActionParam param, string val)
         {
@@ -491,7 +491,7 @@ namespace ModActions
                             {
                                 if (pm2.moduleName == "FARControllableSurface")
                                 {
-                                    float curVal = (float)pm.Fields.GetValue("pitchaxis");
+                                    float curVal = (float)pm2.Fields.GetValue("pitchaxis");
                                     sp = curVal + sp;
                                     pm2.Fields.SetValue("pitchaxis", sp);
                                 }
@@ -523,7 +523,7 @@ namespace ModActions
                             {
                                 if (pm2.moduleName == "FARControllableSurface")
                                 {
-                                    float curVal = (float)pm.Fields.GetValue("yawaxis");
+                                    float curVal = (float)pm2.Fields.GetValue("yawaxis");
                                     sp = curVal + sp;
                                     pm2.Fields.SetValue("yawaxis", sp);
                                 }
@@ -555,7 +555,7 @@ namespace ModActions
                             {
                                 if (pm2.moduleName == "FARControllableSurface")
                                 {
-                                    float curVal = (float)pm.Fields.GetValue("rollaxis");
+                                    float curVal = (float)pm2.Fields.GetValue("rollaxis");
                                     sp = curVal + sp;
                                     pm2.Fields.SetValue("yawaxis", sp);
                                 }
@@ -597,7 +597,7 @@ namespace ModActions
                         }
                         break;
                     }
-                case 43: //stock sci lab clean experiments
+                case 43: //stock sci lab clean experimentsher.
                     {
                         foreach (ModuleScienceLab sciLab in pm.part.Modules.OfType<ModuleScienceLab>())
                         {
@@ -605,6 +605,226 @@ namespace ModActions
                         }
                         break;
                     }
+                case 44: //pump on
+                    {
+                        //foreach(PartModule pm4 in pm.part.Modules)
+                        //{
+                        //    Debug.Log("module " + pm4.moduleName);
+                        //    if(pm4.moduleName=="GPOSpeedPump")
+                        //    {
+                        //        foreach(BaseField fld in pm4.Fields)
+                        //        {
+                        //            Debug.Log(fld.name);
+                        //        }
+                        //    }
+                        //}
+                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoPump", true);
+                        break;
+                    }
+                case 45: //pump off
+                    {
+                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoPump", false);
+                        break;
+                    }
+                case 46: //pump toggle
+                    {
+                        if ((bool)pm.part.Modules["GPOSpeedPump"].Fields.GetValue("AutoPump"))
+                        {
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoPump", false);
+                        }
+                        else
+                        {
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoPump", true);
+                        }
+                        break;
+                    }
+                case 47: //balance on
+                    {
+                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoBalance", true);
+                        break;
+                    }
+                case 48: //bal off
+                    {
+                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoBalance", false);
+                        break;
+                    }
+                case 49: //bal toggle
+                    {
+                        if ((bool)pm.part.Modules["GPOSpeedPump"].Fields.GetValue("AutoBalance"))
+                        {
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoBalance", false);
+                        }
+                        else
+                        {
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoBalance", true);
+                        }
+                        break;
+                    }
+                case 50: //set pump level
+                    {
+                        int setpoint;
+                        if (int.TryParse(val, out setpoint))
+                        {
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("PumpLevel", Mathf.Clamp((float)setpoint,0f,16f));
+                        }
+                        break;
+                    }
+                case 51: //change pump level
+                    {
+                        int setpoint;
+                        if (int.TryParse(val, out setpoint))
+                        {
+                            float setpoint2 = (float)pm.part.Modules["GPOSpeedPump"].Fields.GetValue("PumpLevel") + (float)setpoint;
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("PumpLevel", Mathf.Clamp(setpoint2, 0f, 16f));
+                        }
+                        break;
+                    }
+                case 52: //land aid on
+                    {
+                        if (pm.vessel == FlightGlobals.ActiveVessel)
+                        {
+                            Type calledType = Type.GetType("RCSLandAid.RCSLandingAid, RCSLandAid");
+                            //Debug.Log("type " + calledType.ToString());
+                            MonoBehaviour LandAidGUI = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType);
+                            // Debug.Log("method " + LandAidGUI.name);
+                            MethodInfo myMethod = calledType.GetMethod("SetHoverOn", BindingFlags.Instance | BindingFlags.Public);
+                            // Debug.Log("method3 " + myMethod.Name);
+                            myMethod.Invoke(LandAidGUI, null);
+                        }
+                        else
+                        {
+                            foreach (Part p in pm.vessel.parts.Where(p => p.Modules.Contains("RCSLandingAidModule")))
+                            {
+                                if ((bool)p.Modules["RCSLandingAidModule"].Fields.GetValue("isMasterModule"))
+                                {
+                                    p.Modules["RCSLandingAidModule"].Fields.SetValue("controlState",1);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case 53: //land aid off
+                    {
+                        if(pm.vessel == FlightGlobals.ActiveVessel)
+                        {
+                        Type calledType = Type.GetType("RCSLandAid.RCSLandingAid, RCSLandAid");
+                        //Debug.Log("type " + calledType.ToString());
+                        MonoBehaviour LandAidGUI = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType);
+                        // Debug.Log("method " + LandAidGUI.name);
+                        MethodInfo myMethod = calledType.GetMethod("SetHoverOff", BindingFlags.Instance | BindingFlags.Public);
+                        // Debug.Log("method3 " + myMethod.Name);
+                        myMethod.Invoke(LandAidGUI, null);
+                        }
+                        else
+                        {
+                            foreach (Part p in pm.vessel.parts.Where(p => p.Modules.Contains("RCSLandingAidModule")))
+                            {
+                                if ((bool)p.Modules["RCSLandingAidModule"].Fields.GetValue("isMasterModule"))
+                                {
+                                    p.Modules["RCSLandingAidModule"].Fields.SetValue("controlState",0);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case 54:
+                    {
+                        int landAidEngaged = 0;
+                        foreach (Part p in pm.vessel.parts.Where(p => p.Modules.Contains("RCSLandingAidModule")))
+                        {
+                            if ((bool)p.Modules["RCSLandingAidModule"].Fields.GetValue("isMasterModule"))
+                            {
+                                landAidEngaged = (int)p.Modules["RCSLandingAidModule"].Fields.GetValue("controlState");
+                            }
+                        }
+                        if(landAidEngaged == 1)
+                        {
+                            goto case 53;
+                        }
+                        else
+                        {
+                            goto case 52;
+                        }
+                        break;
+                    }
+                case 55: //position hold off
+                    {
+                        if (pm.vessel == FlightGlobals.ActiveVessel)
+                        {
+                            Type calledType = Type.GetType("RCSLandAid.RCSLandingAid, RCSLandAid");
+                            //Debug.Log("type " + calledType.ToString());
+                            MonoBehaviour LandAidGUI = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType);
+                            // Debug.Log("method " + LandAidGUI.name);
+                            MethodInfo myMethod = calledType.GetMethod("SetHoverOff", BindingFlags.Instance | BindingFlags.Public);
+                            // Debug.Log("method3 " + myMethod.Name);
+                            myMethod.Invoke(LandAidGUI, null);
+                        }
+                        else
+                        {
+                            foreach (Part p in pm.vessel.parts.Where(p => p.Modules.Contains("RCSLandingAidModule")))
+                            {
+                                if ((bool)p.Modules["RCSLandingAidModule"].Fields.GetValue("isMasterModule"))
+                                {
+                                    p.Modules["RCSLandingAidModule"].Fields.SetValue("controlState", 0);
+                                    p.Modules["RCSLandingAidModule"].Fields.SetValue("selectingTarget", false);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case 56: //position hold here
+                    {
+                        if (pm.vessel == FlightGlobals.ActiveVessel)
+                        {
+                            Type calledType = Type.GetType("RCSLandAid.RCSLandingAid, RCSLandAid");
+                            //Debug.Log("type " + calledType.ToString());
+                            MonoBehaviour LandAidGUI = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType);
+                            // Debug.Log("method " + LandAidGUI.name);
+                            MethodInfo myMethod = calledType.GetMethod("SetHoldOnHere", BindingFlags.Instance | BindingFlags.Public);
+                            // Debug.Log("method3 " + myMethod.Name);
+                            myMethod.Invoke(LandAidGUI, null);
+                        }
+                        else
+                        {
+                            foreach (Part p in pm.vessel.parts.Where(p => p.Modules.Contains("RCSLandingAidModule")))
+                            {
+                                if ((bool)p.Modules["RCSLandingAidModule"].Fields.GetValue("isMasterModule"))
+                                {
+                                    p.Modules["RCSLandingAidModule"].Fields.SetValue("controlState", 2);
+                                    p.Modules["RCSLandingAidModule"].Fields.SetValue("targetLocation", FlightGlobals.ActiveVessel.transform.position);
+                                    //p.Modules["RCSLandingAidModule"].Fields.SetValue("selectingTarget", false);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case 57: //position hold at mouse click
+                    {
+                        if (pm.vessel == FlightGlobals.ActiveVessel)
+                        {
+                            Type calledType = Type.GetType("RCSLandAid.RCSLandingAid, RCSLandAid");
+                            //Debug.Log("type " + calledType.ToString());
+                            MonoBehaviour LandAidGUI = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType);
+                            // Debug.Log("method " + LandAidGUI.name);
+                            MethodInfo myMethod = calledType.GetMethod("SetHoldOnLink", BindingFlags.Instance | BindingFlags.Public);
+                            // Debug.Log("method3 " + myMethod.Name);
+                            myMethod.Invoke(LandAidGUI, null);
+                        }
+                        else
+                        {
+                            foreach (Part p in pm.vessel.parts.Where(p => p.Modules.Contains("RCSLandingAidModule")))
+                            {
+                                if ((bool)p.Modules["RCSLandingAidModule"].Fields.GetValue("isMasterModule"))
+                                {
+                                    p.Modules["RCSLandingAidModule"].Fields.SetValue("controlState", 2);
+                                    p.Modules["RCSLandingAidModule"].Fields.SetValue("targetLocation", FlightGlobals.ActiveVessel.transform.position);
+                                    //p.Modules["RCSLandingAidModule"].Fields.SetValue("selectingTarget", false);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                
             } //close switch bracket
         }
     }
