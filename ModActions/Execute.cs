@@ -618,45 +618,45 @@ namespace ModActions
                         //        }
                         //    }
                         //}
-                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoPump", true);
+                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("_autoPump", true);
                         break;
                     }
                 case 45: //pump off
                     {
-                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoPump", false);
+                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("_autoPump", false);
                         break;
                     }
                 case 46: //pump toggle
                     {
-                        if ((bool)pm.part.Modules["GPOSpeedPump"].Fields.GetValue("AutoPump"))
+                        if ((bool)pm.part.Modules["GPOSpeedPump"].Fields.GetValue("_autoPump"))
                         {
-                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoPump", false);
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("_autoPump", false);
                         }
                         else
                         {
-                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoPump", true);
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("_autoPump", true);
                         }
                         break;
                     }
                 case 47: //balance on
                     {
-                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoBalance", true);
+                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("_autoBalance", true);
                         break;
                     }
                 case 48: //bal off
                     {
-                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoBalance", false);
+                        pm.part.Modules["GPOSpeedPump"].Fields.SetValue("_autoBalance", false);
                         break;
                     }
                 case 49: //bal toggle
                     {
-                        if ((bool)pm.part.Modules["GPOSpeedPump"].Fields.GetValue("AutoBalance"))
+                        if ((bool)pm.part.Modules["GPOSpeedPump"].Fields.GetValue("_autoBalance"))
                         {
-                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoBalance", false);
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("_autoBalance", false);
                         }
                         else
                         {
-                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("AutoBalance", true);
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("_autoBalance", true);
                         }
                         break;
                     }
@@ -665,7 +665,7 @@ namespace ModActions
                         int setpoint;
                         if (int.TryParse(val, out setpoint))
                         {
-                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("PumpLevel", Mathf.Clamp((float)setpoint,0f,16f));
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("_pumpLevel", Mathf.Clamp((float)setpoint, 0f, 16f));
                         }
                         break;
                     }
@@ -674,8 +674,8 @@ namespace ModActions
                         int setpoint;
                         if (int.TryParse(val, out setpoint))
                         {
-                            float setpoint2 = (float)pm.part.Modules["GPOSpeedPump"].Fields.GetValue("PumpLevel") + (float)setpoint;
-                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("PumpLevel", Mathf.Clamp(setpoint2, 0f, 16f));
+                            float setpoint2 = (float)pm.part.Modules["GPOSpeedPump"].Fields.GetValue("_pumpLevel") + (float)setpoint;
+                            pm.part.Modules["GPOSpeedPump"].Fields.SetValue("_pumpLevel", Mathf.Clamp(setpoint2, 0f, 16f));
                         }
                         break;
                     }

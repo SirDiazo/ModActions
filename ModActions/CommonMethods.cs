@@ -52,7 +52,7 @@ namespace ModActions
     {
         public void Start()
         {
-            Debug.Log("ModActions Ver. 1.0 Starting.....");
+            Debug.Log("ModActions Ver. 1.1a Starting.....");
             if (!StaticMethods.ListPopulated) //populate our list if this is first load
             {
                 StaticMethods.AllActionsList = new List<ModActionData>();
@@ -161,8 +161,8 @@ namespace ModActions
 
         public void OnDisable()
         {
-           
-            
+
+
             if (ourWin != null)
             {
                 winTop = ourWin.MainWindowRect.y;
@@ -353,8 +353,8 @@ namespace ModActions
         public void OnDisable()
         {
 
-           
-            
+
+
             if (ourWin != null)
             {
                 Debug.Log("ModActions Flight Dis b");
@@ -451,6 +451,36 @@ namespace ModActions
         public static List<ModActionData> AllActionsList;
         public static Dictionary<string, Type> pmTypes;
     }
+
+    //public class VslResTest
+    //{
+    //    Dictionary<Vessel, Dictionary<string, double>> allVesselResources;
+
+    //    public void Update() //replace with your trigger
+    //    {
+    //        foreach (Vessel vsl in FlightGlobals.Vessels) //cycles all vessels in game, will probably nullref on vessels outside physics range
+    //        {
+    //            if(allVesselResources.ContainsKey(vsl)) //if vessel is present in our saved data remove it to avoid duplicate data
+    //            {
+    //                allVesselResources.Remove(vsl);
+    //            }
+    //            allVesselResources.Add(vsl,new Dictionary<string,double>()); //note the new, that zeros all values for the vessel
+    //            Dictionary<string, double> vesselResources = allVesselResources[vsl]; //create a shortcut reference to this vessel's dictionary
+    //            foreach(Part p in vsl.parts) //cycle through parts on the current vessel
+    //            {
+    //                foreach(PartResource pRes in p.Resources) //cycle through all resources on this part
+    //                {
+    //                    if(!vesselResources.ContainsKey(pRes.resourceName)) //check if resource exists already
+    //                    {
+    //                        vesselResources.Add(pRes.resourceName, 0f); //add resources with zero amount if it doesn't exist
+    //                    }
+    //                    vesselResources[pRes.resourceName] += pRes.amount;
+    //                }
+    //            }
+    //        } //close foreach cycling through vessels
+    //        Debug.Log("Electric charge on focus vessel is " + allVesselResources[FlightGlobals.ActiveVessel].["ElectricCharge"]);
+    //    }
+    //}
 
 
 }
