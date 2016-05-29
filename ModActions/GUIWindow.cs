@@ -7,8 +7,10 @@ using System.Reflection;
 
 namespace ModActions
 {
-    class MainGUIWindow //DO NOT INHERIT ANYTHING, BREAKS THIS CLASS FOR REASONS UNKNOWN
+    class MainGUIWindow//DO NOT INHERIT ANYTHING, BREAKS THIS CLASS FOR REASONS UNKNOWN, think it gets garbage collected too soon?
     {
+
+        //public bool enabled = true;
         public Rect MainWindowRect; //main GUI window rectangle
         public List<Part> parts; //list of parts of our current vessel
         public Part selectedPart; //our selected part
@@ -30,14 +32,14 @@ namespace ModActions
         string selectingParts;
         string selectingPartsName;
         Camera cameraPos;
-        bool copyMode;
+        public bool copyMode;
         Part copyPart;
 
 
         public MainGUIWindow(List<Part> prts, float winTop, float winLeft) //effectively our Start() method
         {
             savedScrollLocation = new Vector2(0, 0);
-            RenderingManager.AddToPostDrawQueue(5, ModActsDraw);
+            //RenderingManager.AddToPostDrawQueue(5, ModActsDraw);
             MainWindowRect = new Rect(winLeft, winTop, 530, 135);
             parts = prts;
             modNames = new List<String>();
@@ -85,14 +87,15 @@ namespace ModActions
 
         }
 
-        public void Kill() //effectively our OnDisable() method
-        {
-            RenderingManager.RemoveFromPostDrawQueue(0, ModActsDraw);
+        //public void Kill() //effectively our OnDisable() method
+        //{
+        //    RenderingManager.RemoveFromPostDrawQueue(0, ModActsDraw);
 
-        }
+        //}
 
-        public void ModActsDraw()
+        public void OnGUI()
         {
+            //Debug.Log("Modacts GUI method");
             string errLine = "1";
             try
             {
@@ -270,7 +273,7 @@ namespace ModActions
                     }
                     else
                     {
-                        GUI.Label(new Rect(5, 35, 500, 20), "Critial error, no actions loaded.", thisSkin.label);
+                        GUI.Label(new Rect(5, 35, 500, 20), "ModActions Critial error, no actions loaded.", thisSkin.label);
                         GUI.Label(new Rect(5, 65, 500, 20), "Check your installation path and/or file a bug report.", thisSkin.label);
                     }
 
@@ -649,10 +652,10 @@ namespace ModActions
                 if (HighLogic.LoadedSceneIsEditor)
                 {
                     errLine = "7";
-                    EditorActionGroups.Instance.SelectGroup();
+                    KSP.UI.Screens.EditorActionGroups.Instance.SelectGroup(); //used to refresh stock editor, find new ksp 1.1 method
                     try
                     {
-                        StaticMethodsUnity.RefreshAGXEditor();
+                        StaticMethodsUnity.RefreshAGXEditor(); 
                     }
                     catch
                     {

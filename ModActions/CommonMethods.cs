@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.IO;
 using System.Reflection;
+using KSP.UI.Screens;
 
 namespace ModActions
 {
 
     public class ModActionData
     {
+        
         public int Identifier; //unique identifier, used for SWITCH statement
         public string ModuleName; //partModule name for filter, show this action if selected part has this module
         public string Description; //action group description, used for BaseAction.guiName, first column (is editable), resets when ActionValue type changes to default action value
@@ -52,7 +55,7 @@ namespace ModActions
     {
         public void Start()
         {
-            Debug.Log("ModActions Ver. 1.1a Starting.....");
+            Debug.Log("ModActions Ver. 1.2 Starting.....");
             if (!StaticMethods.ListPopulated) //populate our list if this is first load
             {
                 StaticMethods.AllActionsList = new List<ModActionData>();
@@ -107,7 +110,7 @@ namespace ModActions
     [KSPAddon(KSPAddon.Startup.EditorAny, false)]
     public class ModActionsEditor : PartModule
     {
-        MainGUIWindow ourWin;
+        private bool buttonCreated = false; MainGUIWindow ourWin;
         ConfigNode settings;
         float winTop;
         float winLeft;
@@ -119,8 +122,8 @@ namespace ModActions
 
         public void Start()
         {
-            EditorPanels.Instance.actions.AddValueChangedDelegate(WinChangeAction);
-            settings = ConfigNode.Load(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.cfg");
+            GameEvents.onEditorScreenChange.Add(WinChangeAction);
+            settings = ConfigNode.Load(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.settings");
             winTop = float.Parse(settings.GetValue("EdWinTop"));
             winLeft = float.Parse(settings.GetValue("EdWinLeft"));
             if (ToolbarManager.ToolbarAvailable) //check if toolbar available, load if it is
@@ -141,12 +144,30 @@ namespace ModActions
             else
             {
                 //now using stock toolbar as fallback
+                //ModActsEditorButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActions/BtnStock", false));
+                StartCoroutine("AddButtons");
+            }
+        }
+
+        IEnumerator AddButtons()
+        {
+            while (!ApplicationLauncher.Ready)
+            {
+                yield return null;
+            }
+            if (!buttonCreated)
+            {
                 ModActsEditorButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActions/BtnStock", false));
+                //GameEvents.onGUIApplicationLauncherReady.Remove(AddButtons);
+                //CLButton.onLeftClick(StockToolbarClick);
+                //CLButton.onRightClick = (Callback)Delegate.Combine(CLButton.onRightClick, rightClick); //combine delegates together
+                buttonCreated = true;
             }
         }
 
         public void onStockToolbarClick()
         {
+            Debug.Log("Modacts buton clik");
             showWin = !showWin;
             if (ourWin != null)
             {
@@ -159,6 +180,16 @@ namespace ModActions
 
         }
 
+        public void OnGUI()
+        {
+            //Debug.Log("Modacts calling GUI!" + ourWin.copyMode);
+            if(showWin && ourWin != null)
+            { 
+                //Debug.Log("Modacts calling GUI!2");
+                ourWin.OnGUI();
+            }
+        }
+
         public void OnDisable()
         {
 
@@ -168,13 +199,13 @@ namespace ModActions
                 winTop = ourWin.MainWindowRect.y;
                 winLeft = ourWin.MainWindowRect.x;
                 ourWin.drawWin = false;
-                ourWin.Kill();
+                //ourWin.Kill();
             }
             settings.RemoveValue("EdWinTop");
             settings.RemoveValue("EdWinLeft");
             settings.AddValue("EdWinTop", winTop);
             settings.AddValue("EdWinLeft", winLeft);
-            settings.Save(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.cfg");
+            settings.Save(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.settings");
             ourWin = null;
             if (ToolbarManager.ToolbarAvailable) //if toolbar loaded, destroy button on leaving scene
             {
@@ -186,21 +217,26 @@ namespace ModActions
             }
         }
 
-        public void WinChangeAction(IUIObject obj)
+        public void WinChangeAction(EditorScreen scrn)
         {
+            Debug.Log("ModActs win change");
             if (EditorLogic.fetch.editorScreen == EditorScreen.Actions)
             {
+                Debug.Log("ModActs win change1");
                 if (ourWin == null) //initialize our window if not already extant, this event triggers twice per panels change
                 {
-                    ourWin = new MainGUIWindow(EditorLogic.SortedShipList, winTop, winLeft);
+                    ourWin = new MainGUIWindow(EditorLogic.SortedShipList, winTop, winLeft);                   
                     ourWin.drawWin = showWin;
                     try //getselectedparts returns null somewhere above it in the hierchy, do it this way for simplicities sake
                     {
+                        Debug.Log("ModActs win change1a1");
                         ourWin.SetPart(EditorActionGroups.Instance.GetSelectedParts().First());
+                        Debug.Log("ModActs win change1a2");
                         lastSelectedPart = EditorActionGroups.Instance.GetSelectedParts().First();
                     }
                     catch
                     {
+                        Debug.Log("ModActs win change1a");
                         ourWin.SetPart(null);
                         lastSelectedPart = null;
                     }
@@ -208,10 +244,11 @@ namespace ModActions
             }
             else //moving away from actions panel, null our window
             {
+                Debug.Log("ModActs win chang2e");
                 if (ourWin != null)
                 {
                     ourWin.drawWin = false;
-                    ourWin.Kill();
+                    //ourWin.Kill();
                 }
                 ourWin = null;
             }
@@ -250,6 +287,7 @@ namespace ModActions
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class ModActionsFlight : PartModule
     {
+        private bool buttonCreated = false;
         MainGUIWindow ourWin;
         ConfigNode settings;
         float winTop;
@@ -263,7 +301,7 @@ namespace ModActions
         public void Start()
         {
 
-            settings = ConfigNode.Load(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.cfg");
+            settings = ConfigNode.Load(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.settings");
             winTop = float.Parse(settings.GetValue("FltWinTop"));
             winLeft = float.Parse(settings.GetValue("FltWinLeft"));
             if (ToolbarManager.ToolbarAvailable) //check if toolbar available, load if it is
@@ -290,7 +328,7 @@ namespace ModActions
                         if (ourWin != null)
                         {
                             ourWin.drawWin = false;
-                            ourWin.Kill();
+                            //ourWin.Kill();
                             ourWin = null;
                         }
                     }
@@ -299,7 +337,32 @@ namespace ModActions
             else
             {
                 //now using stock toolbar as fallback
+                //ModActsFlightButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.FLIGHT, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActions/BtnStock", false));
+                StartCoroutine("AddButtons");
+            }
+        }
+
+        IEnumerator AddButtons()
+        {
+            while (!ApplicationLauncher.Ready)
+            {
+                yield return null;
+            }
+            if (!buttonCreated)
+            {
                 ModActsFlightButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.FLIGHT, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActions/BtnStock", false));
+                //GameEvents.onGUIApplicationLauncherReady.Remove(AddButtons);
+                //CLButton.onLeftClick(StockToolbarClick);
+                //CLButton.onRightClick = (Callback)Delegate.Combine(CLButton.onRightClick, rightClick); //combine delegates together
+                buttonCreated = true;
+            }
+        }
+
+        public void OnGUI()
+        {
+            if(ShowModActs && ourWin != null)
+            {
+                ourWin.OnGUI();
             }
         }
 
@@ -334,7 +397,7 @@ namespace ModActions
                     {
                         errLine = "10";
                         ourWin.drawWin = false;
-                        ourWin.Kill();
+                        //ourWin.Kill();
                         ourWin = null;
                     }
                 }
@@ -361,14 +424,14 @@ namespace ModActions
                 winTop = ourWin.MainWindowRect.y;
                 winLeft = ourWin.MainWindowRect.x;
                 ourWin.drawWin = false;
-                ourWin.Kill();
+                //ourWin.Kill();
             }
             settings.RemoveValue("FltWinTop");
             settings.RemoveValue("FltWinLeft");
             settings.AddValue("FltWinTop", winTop);
             settings.AddValue("FltWinLeft", winLeft);
             Debug.Log("ModActions Flight Dis A");
-            settings.Save(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.cfg");
+            settings.Save(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.settings");
             Debug.Log("ModActions Flight Dis c");
             ourWin = null;
             if (ToolbarManager.ToolbarAvailable) //if toolbar loaded, destroy button on leaving scene
@@ -417,31 +480,36 @@ namespace ModActions
                     }
                 }
             }
-
+            //foreach(Part p in FlightGlobals.ActiveVessel.Parts)
+            //{
+            //    Debug.Log("modacts " + p.name + " " + p.HighlightActive + "|" + Mouse.HoveredPart); 
+            //}
         }
 
         public Part SelectPartUnderMouse()
         {
-            FlightCamera CamTest = new FlightCamera();
-            CamTest = FlightCamera.fetch;
-            Ray ray = CamTest.mainCamera.ScreenPointToRay(Input.mousePosition);
-            LayerMask RayMask = new LayerMask();
-            RayMask = 1 << 0;
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, RayMask))
-            {
-                Part hitPart = (Part)UIPartActionController.GetComponentUpwards("Part", hit.collider.gameObject); //how to find small parts that are "inside" the large part they are attached to.
-                if (FlightGlobals.ActiveVessel.parts.Contains(hitPart))
-                {
-                    return hitPart;
-                }
-                else
-                {
-                    return null;
-                }
-                //return FlightGlobals.ActiveVessel.Parts.Find(p => p.gameObject == hit.transform.gameObject);
-            }
-            return null;
+            //FlightCamera CamTest = new FlightCamera();
+            //CamTest = FlightCamera.fetch;
+            //Ray ray = CamTest.mainCamera.ScreenPointToRay(Input.mousePosition);
+            //LayerMask RayMask = new LayerMask();
+            //RayMask = 1 << 0;
+            //RaycastHit hit;
+            //if (Physics.Raycast(ray, out hit, Mathf.Infinity, RayMask))
+            //{
+            //    Part hitPart = (Part)UIPartActionController.GetComponentUpwards("Part", hit.collider.gameObject); //how to find small parts that are "inside" the large part they are attached to.
+            //    if (FlightGlobals.ActiveVessel.parts.Contains(hitPart))
+            //    {
+            //        return hitPart;
+            //    }
+            //    else
+            //    {
+            //        return null;
+            //    }
+            //    //return FlightGlobals.ActiveVessel.Parts.Find(p => p.gameObject == hit.transform.gameObject);
+            //}
+            //return null;
+
+            return Mouse.HoveredPart;
         }
     }
 

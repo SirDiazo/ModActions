@@ -563,7 +563,7 @@ namespace ModActions
                         }
                         break;
                     }
-                case 40:
+                case 40: //ModuleWheel discontinued in KSP 1.1, left just in case for now
                     {
                         foreach (ModuleWheel mWheel in pm.part.Modules.OfType<ModuleWheel>())
                         {
@@ -824,8 +824,371 @@ namespace ModActions
                         }
                         break;
                     }
-                
+                case 58: //new wheel system in KSP 1.1, toggle suspencion
+                    {
+                        foreach(ModuleWheelBase pm2 in pm.part.Modules.OfType<ModuleWheelBase>())
+                        {
+                            pm2.suspensionEnabled = !pm2.suspensionEnabled;
+                        }
+                        break;
+                    }
+                case 59: //enable friction control
+                    {
+                        foreach (ModuleWheelBase pm2 in pm.part.Modules.OfType<ModuleWheelBase>())
+                        {
+                            pm2.autoFriction = true;
+                        }
+                        break;
+                    }
+                case 60: //disable friction control
+                    {
+                        foreach (ModuleWheelBase pm2 in pm.part.Modules.OfType<ModuleWheelBase>())
+                        {
+                            pm2.autoFriction = false;
+                        }
+                        break;
+                    }
+                case 61: //add brakes to brake action group
+                    {
+                        foreach (ModuleWheels.ModuleWheelBrakes pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelBrakes>())
+                        {
+                                BaseAction whlBrakes = pm2.Actions.Find(ba => ba.name == "Brake");
+                                whlBrakes.actionGroup = whlBrakes.actionGroup | KSPActionGroup.Brakes;
+                        }
+                        break;
+                    }
+                case 62: //remove brakes from brake action group
+                    {
+                        foreach (ModuleWheels.ModuleWheelBrakes pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelBrakes>())
+                        {
+                            BaseAction whlBrakes = pm2.Actions.Find(ba => ba.name == "Brake");
+                            whlBrakes.actionGroup &= ~KSPActionGroup.Brakes;
+                        }
+                        break;
+                    }
+                case 63: //toggle brakes in brake group
+                    {
+                        foreach (ModuleWheels.ModuleWheelBrakes pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelBrakes>())
+                        {
+                            BaseAction whlBrakes = pm2.Actions.Find(ba => ba.name == "Brake");
+                            if ((whlBrakes.actionGroup & KSPActionGroup.Brakes) == KSPActionGroup.Brakes)
+                            {
+                                whlBrakes.actionGroup &= ~KSPActionGroup.Brakes;
+                            }
+                            else
+                            {
+                                whlBrakes.actionGroup = whlBrakes.actionGroup | KSPActionGroup.Brakes;
+                            }
+                        }
+                        break;
+                    }
+                case 64: //turn brakes on
+                    {
+                        foreach (ModuleWheels.ModuleWheelBrakes pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelBrakes>())
+                        {
+                            pm2.brakeInput = 1f;
+                        }
+                        break;
+                    }
+                case 65: //turn brakes off
+                    {
+                        foreach (ModuleWheels.ModuleWheelBrakes pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelBrakes>())
+                        {
+                            pm2.brakeInput = 0f;
+                        }
+                        break;
+                    }
+                case 66: //toggle brakes
+                    {
+                        foreach (ModuleWheels.ModuleWheelBrakes pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelBrakes>())
+                        {
+                            if(pm2.brakeInput == 0f)
+                            {
+                                pm2.brakeInput = 1f;
+                            }
+                            else
+                            {
+                                pm2.brakeInput = 0f;
+                            }
+                        }
+                        break;
+                    }
+                case 67: //set brake strength
+                    {
+                        float setVal = 0f;
+                        if (float.TryParse(val, out setVal))
+                        {
+                            setVal = Mathf.Clamp(setVal, 0f, 100f);
+                            foreach (ModuleWheels.ModuleWheelBrakes pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelBrakes>())
+                            {
+                                pm2.brakeTweak = setVal;
+                            }
+                        }
+                        break;
+                    }
+                case 68: //chnage brake strength
+                    {
+                        float setVal = 0f;
+                        if (float.TryParse(val, out setVal))
+                        {
+                            foreach (ModuleWheels.ModuleWheelBrakes pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelBrakes>())
+                            {
+                                float tempVal = pm2.brakeTweak + setVal;
+                                pm2.brakeTweak = Mathf.Clamp(tempVal, 0f, 100f);
+                            }
+                        }
+                        break;
+                    }
+                case 69: //deploy landing legs/gear
+                    {
+                        foreach (ModuleWheels.ModuleWheelDeployment pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelDeployment>())
+                        {
+                            if (pm2.part.ShieldedFromAirstream && !pm2.shieldedCanDeploy)
+                            {
+                                ScreenMessages.PostScreenMessage("Landing Legs/Gear deploy action failed.", 5f, ScreenMessageStyle.UPPER_LEFT);
+                            }
+                            else
+                            {
+                                pm2.fsm.RunEvent(pm2.on_deploy);
+                            }
+                        }
+                        break;
+                    }
+                case 70: //retract landing legs/gear
+                    {
+                        foreach (ModuleWheels.ModuleWheelDeployment pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelDeployment>())
+                        {
+                                pm2.fsm.RunEvent(pm2.on_retract);
+                        }
+                        break;
+                    }
+                case 71: //traction control on
+                    {
+                        foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                        {
+                            pm2.autoTorque = true;
+                        }
+                        break;
+                    }
+                case 72: //traction control off
+                    {
+                        foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                        {
+                            pm2.autoTorque = false;
+                        }
+                        break;
+                    }
+                case 73: //set traction control intensity
+                    {
+                        float setVal = 0f;
+                        if (float.TryParse(val, out setVal))
+                        {
+                            foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                            {
+                                pm2.tractionControlScale = Mathf.Clamp(setVal, 0f, 5f);
+                            }
+                        }
+                        break;
+                    }
+                case 74: //change traction control intensity
+                    {
+                        float setVal = 0f;
+                        if (float.TryParse(val, out setVal))
+                        {
+                            foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                            {
+                                pm2.tractionControlScale = Mathf.Clamp(pm2.tractionControlScale + setVal, 0f, 5f);
+                            }
+                        }
+                        break;
+                    }
+                case 75: //enable motor
+                    {
+                        
+                            foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                            {
+                                pm2.motorEnabled = true;
+                            }
+                        
+                        break;
+                    }
+                case 76: //disable motor
+                    {
+
+                        foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                        {
+                            pm2.motorEnabled = false;
+                        }
+
+                        break;
+                    }
+                case 77: //toggle motor
+                    {
+
+                        foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                        {
+                            pm2.motorEnabled = !pm2.motorEnabled;
+                        }
+
+                        break;
+                    }
+                case 78: //set motor %
+                    {
+                        float setVal = 0f;
+                        if (float.TryParse(val, out setVal))
+                        {
+                            foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                            {
+                                pm2.driveLimiter = Mathf.Clamp(setVal, 0f, 100f);
+                            }
+                        }
+
+                        break;
+                    }
+                case 79: //change motor %
+                    {
+                        float setVal = 0f;
+                        if (float.TryParse(val, out setVal))
+                        {
+                            foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                            {
+                                pm2.driveLimiter = Mathf.Clamp(pm2.driveLimiter+ setVal, 0f, 100f);
+                            }
+                        }
+
+                        break;
+                    }
+                case 80: //motor direction normal
+                    {
+                        
+                            foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                            {
+                                pm2.motorInverted = false;
+                            }
+                        
+
+                        break;
+                    }
+                case 81: //motor direction inverted
+                    {
+
+                        foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                        {
+                            pm2.motorInverted = true;
+                        }
+
+
+                        break;
+                    }
+                case 82: //toggle motor direction 
+                    {
+
+                        foreach (ModuleWheels.ModuleWheelMotor pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotor>())
+                        {
+                            pm2.motorInverted = !pm2.motorInverted;
+                        }
+
+
+                        break;
+                    }
+                case 83: //differential steering on
+                    {
+                        foreach (ModuleWheels.ModuleWheelMotorSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotorSteering>())
+                        {
+                            pm2.steeringEnabled = true;
+                        }
+                        break;
+                    }
+                case 84: //differential steering off
+                    {
+                        foreach (ModuleWheels.ModuleWheelMotorSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotorSteering>())
+                        {
+                            pm2.steeringEnabled = false;
+                        }
+                        break;
+                    }
+                case 85: //differential steering toggle
+                    {
+                        foreach (ModuleWheels.ModuleWheelMotorSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotorSteering>())
+                        {
+                            pm2.steeringEnabled = !pm2.steeringEnabled;
+                        }
+                        break;
+                    }
+                case 86: //differential steering direction normal
+                    {
+                        foreach (ModuleWheels.ModuleWheelMotorSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotorSteering>())
+                        {
+                            pm2.steeringInvert = false;
+                        }
+                        break;
+                    }
+                case 87: //differential steering direction invert
+                    {
+                        foreach (ModuleWheels.ModuleWheelMotorSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotorSteering>())
+                        {
+                            pm2.steeringInvert = true;
+                        }
+                        break;
+                    }
+                case 88: //differential steering direction toggle
+                    {
+                        foreach (ModuleWheels.ModuleWheelMotorSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelMotorSteering>())
+                        {
+                            pm2.steeringInvert = !pm2.steeringInvert;
+                        }
+                        break;
+                    }
+                case 89: //normal steering on
+                    {
+                        foreach (ModuleWheels.ModuleWheelSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelSteering>())
+                        {
+                            pm2.steeringEnabled = true;
+                        }
+                        break;
+                    }
+                case 90: //normal steering of
+                    {
+                        foreach (ModuleWheels.ModuleWheelSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelSteering>())
+                        {
+                            pm2.steeringEnabled = false;
+                        }
+                        break;
+                    }
+                case 91: //normal steering toggle
+                    {
+                        foreach (ModuleWheels.ModuleWheelSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelSteering>())
+                        {
+                            pm2.steeringEnabled = !pm2.steeringEnabled;
+                        }
+                        break;
+                    }
+                case 92: //normal steering direction
+                    {
+                        foreach (ModuleWheels.ModuleWheelSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelSteering>())
+                        {
+                            pm2.steeringInvert = false;
+                        }
+                        break;
+                    }
+                case 93: //normal steering invert
+                    {
+                        foreach (ModuleWheels.ModuleWheelSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelSteering>())
+                        {
+                            pm2.steeringInvert = true;
+                        }
+                        break;
+                    }
+                case 94: //normal steering invert toggle
+                    {
+                        foreach (ModuleWheels.ModuleWheelSteering pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelSteering>())
+                        {
+                            pm2.steeringInvert = !pm2.steeringInvert;
+                        }
+                        break;
+                    }
             } //close switch bracket
+            MonoBehaviorMethods.resetPartWindows();
         }
     }
 
@@ -833,8 +1196,18 @@ namespace ModActions
     {
         public static void setSASUI(int mode)
         {
-            RUIToggleButton[] SASbtns = FindObjectOfType<VesselAutopilotUI>().modeButtons;
-            SASbtns.ElementAt<RUIToggleButton>(mode).SetTrue(true, true);
+            KSP.UI.Screens.Flight.SASDisplay SASdisp = FindObjectOfType<KSP.UI.Screens.Flight.SASDisplay>();//.modeButtons;
+            //SASbtns.ElementAt<RUIToggleButton>(mode).SetTrue(true, true);
+
+        }
+
+        public static void resetPartWindows()
+        {
+            UIPartActionWindow[] partWins = FindObjectsOfType<UIPartActionWindow>();
+            foreach (UIPartActionWindow partWin in partWins)
+            {
+                partWin.displayDirty = true;
+            }
         }
     }
 }
