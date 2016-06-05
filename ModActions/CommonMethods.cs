@@ -55,7 +55,7 @@ namespace ModActions
     {
         public void Start()
         {
-            Debug.Log("ModActions Ver. 1.2 Starting.....");
+            Debug.Log("ModActions Ver. 1.2a Starting.....");
             if (!StaticMethods.ListPopulated) //populate our list if this is first load
             {
                 StaticMethods.AllActionsList = new List<ModActionData>();
@@ -219,24 +219,24 @@ namespace ModActions
 
         public void WinChangeAction(EditorScreen scrn)
         {
-            Debug.Log("ModActs win change");
+            //Debug.Log("ModActs win change");
             if (EditorLogic.fetch.editorScreen == EditorScreen.Actions)
             {
-                Debug.Log("ModActs win change1");
+               // Debug.Log("ModActs win change1");
                 if (ourWin == null) //initialize our window if not already extant, this event triggers twice per panels change
                 {
-                    ourWin = new MainGUIWindow(EditorLogic.SortedShipList, winTop, winLeft);                   
+                    ourWin = new MainGUIWindow(EditorLogic.SortedShipList, winTop, winLeft,true);                   
                     ourWin.drawWin = showWin;
                     try //getselectedparts returns null somewhere above it in the hierchy, do it this way for simplicities sake
                     {
-                        Debug.Log("ModActs win change1a1");
+                       // Debug.Log("ModActs win change1a1");
                         ourWin.SetPart(EditorActionGroups.Instance.GetSelectedParts().First());
-                        Debug.Log("ModActs win change1a2");
+                       // Debug.Log("ModActs win change1a2");
                         lastSelectedPart = EditorActionGroups.Instance.GetSelectedParts().First();
                     }
                     catch
                     {
-                        Debug.Log("ModActs win change1a");
+                      //  Debug.Log("ModActs win change1a");
                         ourWin.SetPart(null);
                         lastSelectedPart = null;
                     }
@@ -244,7 +244,7 @@ namespace ModActions
             }
             else //moving away from actions panel, null our window
             {
-                Debug.Log("ModActs win chang2e");
+               // Debug.Log("ModActs win chang2e");
                 if (ourWin != null)
                 {
                     ourWin.drawWin = false;
@@ -297,6 +297,7 @@ namespace ModActions
         IButton MABtn;
         ApplicationLauncherButton ModActsFlightButton;
         float lastUpdateTime;
+        public bool showKSPui = true;
 
         public void Start()
         {
@@ -317,7 +318,7 @@ namespace ModActions
                     {
                         if (ourWin == null)
                         {
-                            ourWin = new MainGUIWindow(FlightGlobals.ActiveVessel.Parts, winTop, winLeft);
+                            ourWin = new MainGUIWindow(FlightGlobals.ActiveVessel.Parts, winTop, winLeft, showKSPui);
                         }
                         ourWin.SetPart(null);
                         lastSelectedPart = null;
@@ -340,6 +341,25 @@ namespace ModActions
                 //ModActsFlightButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.FLIGHT, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActions/BtnStock", false));
                 StartCoroutine("AddButtons");
             }
+            GameEvents.onHideUI.Add(onHideMyUI);
+            GameEvents.onShowUI.Add(onShowMyUI);
+        }
+
+        void onHideMyUI()
+        {
+            if(ourWin != null)
+            {
+                ourWin.showKSPui = false;
+            }
+            showKSPui = false;
+        }
+        void onShowMyUI()
+        {
+            if(ourWin != null)
+            {
+                ourWin.showKSPui = true;
+            }
+            showKSPui = true;
         }
 
         IEnumerator AddButtons()
@@ -381,7 +401,7 @@ namespace ModActions
                     {
                         //Debug.Log("make win");
                         errLine = "5";
-                        ourWin = new MainGUIWindow(FlightGlobals.ActiveVessel.Parts, winTop, winLeft);
+                        ourWin = new MainGUIWindow(FlightGlobals.ActiveVessel.Parts, winTop, winLeft, showKSPui);
                     }
                     errLine = "6";
                     ourWin.SetPart(null);
@@ -420,7 +440,7 @@ namespace ModActions
 
             if (ourWin != null)
             {
-                Debug.Log("ModActions Flight Dis b");
+               // Debug.Log("ModActions Flight Dis b");
                 winTop = ourWin.MainWindowRect.y;
                 winLeft = ourWin.MainWindowRect.x;
                 ourWin.drawWin = false;
@@ -430,21 +450,21 @@ namespace ModActions
             settings.RemoveValue("FltWinLeft");
             settings.AddValue("FltWinTop", winTop);
             settings.AddValue("FltWinLeft", winLeft);
-            Debug.Log("ModActions Flight Dis A");
+            //Debug.Log("ModActions Flight Dis A");
             settings.Save(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.settings");
-            Debug.Log("ModActions Flight Dis c");
+          //  Debug.Log("ModActions Flight Dis c");
             ourWin = null;
             if (ToolbarManager.ToolbarAvailable) //if toolbar loaded, destroy button on leaving scene
             {
-                Debug.Log("ModActions Flight Dis d");
+                //Debug.Log("ModActions Flight Dis d");
                 MABtn.Destroy();
             }
             else
             {
-                Debug.Log("ModActions Flight Dis e");
+                //Debug.Log("ModActions Flight Dis e");
                 ApplicationLauncher.Instance.RemoveModApplication(ModActsFlightButton);
             }
-            Debug.Log("ModActions Flight Dis f");
+           // Debug.Log("ModActions Flight Dis f");
         }
 
 

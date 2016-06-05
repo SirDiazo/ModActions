@@ -34,10 +34,12 @@ namespace ModActions
         Camera cameraPos;
         public bool copyMode;
         Part copyPart;
+        public bool showKSPui = true;
 
 
-        public MainGUIWindow(List<Part> prts, float winTop, float winLeft) //effectively our Start() method
+        public MainGUIWindow(List<Part> prts, float winTop, float winLeft, bool showingKSPui) //effectively our Start() method
         {
+            
             savedScrollLocation = new Vector2(0, 0);
             //RenderingManager.AddToPostDrawQueue(5, ModActsDraw);
             MainWindowRect = new Rect(winLeft, winTop, 530, 135);
@@ -84,6 +86,7 @@ namespace ModActions
             }
             selType = SelectType.NoPart;
             //Debug.Log("init okay");
+            showKSPui = showingKSPui;
 
         }
 
@@ -100,7 +103,7 @@ namespace ModActions
             try
             {
                 errLine = "2";
-                if (drawWin)
+                if (drawWin && showKSPui)
                 {
                     errLine = "3";
                     MainWindowRect = GUI.Window(67346779, MainWindowRect, DrawMainWindow, ""); //our main window

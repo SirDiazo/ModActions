@@ -921,7 +921,7 @@ namespace ModActions
                             setVal = Mathf.Clamp(setVal, 0f, 100f);
                             foreach (ModuleWheels.ModuleWheelBrakes pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelBrakes>())
                             {
-                                pm2.brakeTweak = setVal;
+                                pm2.brakeTweakable = setVal;
                             }
                         }
                         break;
@@ -933,8 +933,8 @@ namespace ModActions
                         {
                             foreach (ModuleWheels.ModuleWheelBrakes pm2 in pm.part.Modules.OfType<ModuleWheels.ModuleWheelBrakes>())
                             {
-                                float tempVal = pm2.brakeTweak + setVal;
-                                pm2.brakeTweak = Mathf.Clamp(tempVal, 0f, 100f);
+                                float tempVal = pm2.brakeTweakable + setVal;
+                                pm2.brakeTweakable = Mathf.Clamp(tempVal, 0f, 100f);
                             }
                         }
                         break;
