@@ -563,38 +563,38 @@ namespace ModActions
                         }
                         break;
                     }
-                case 40: //ModuleWheel discontinued in KSP 1.1, left just in case for now
+                case 40: //ModuleWheel discontinued in KSP 1.1, left just in case for now. KSP 1.2 ModuleWheel is jsut gone
                     {
-                        foreach (ModuleWheel mWheel in pm.part.Modules.OfType<ModuleWheel>())
-                        {
-                            BaseAction whlBrakes = mWheel.Actions.Find(ba => ba.name == "BrakesAction");
-                            whlBrakes.actionGroup = whlBrakes.actionGroup | KSPActionGroup.Brakes;
-                        }
+                        //foreach (ModuleWheel mWheel in pm.part.Modules.OfType<ModuleWheel>())
+                        //{
+                        //    BaseAction whlBrakes = mWheel.Actions.Find(ba => ba.name == "BrakesAction");
+                        //    whlBrakes.actionGroup = whlBrakes.actionGroup | KSPActionGroup.Brakes;
+                        //}
                         break;
                     }
                 case 41:
                     {
-                        foreach (ModuleWheel mWheel in pm.part.Modules.OfType<ModuleWheel>())
-                        {
-                            BaseAction whlBrakes = mWheel.Actions.Find(ba => ba.name == "BrakesAction");
-                            whlBrakes.actionGroup &= ~KSPActionGroup.Brakes;
-                        }
+                        //foreach (ModuleWheel mWheel in pm.part.Modules.OfType<ModuleWheel>())
+                        //{
+                        //    BaseAction whlBrakes = mWheel.Actions.Find(ba => ba.name == "BrakesAction");
+                        //    whlBrakes.actionGroup &= ~KSPActionGroup.Brakes;
+                        //}
                         break;
                     }
                 case 42:
                     {
-                        foreach (ModuleWheel mWheel in pm.part.Modules.OfType<ModuleWheel>())
-                        {
-                            BaseAction whlBrakes = mWheel.Actions.Find(ba => ba.name == "BrakesAction");
-                            if ((whlBrakes.actionGroup & KSPActionGroup.Brakes) == KSPActionGroup.Brakes)
-                            {
-                                whlBrakes.actionGroup &= ~KSPActionGroup.Brakes;
-                            }
-                            else
-                            {
-                                whlBrakes.actionGroup = whlBrakes.actionGroup | KSPActionGroup.Brakes;
-                            }
-                        }
+                        //foreach (ModuleWheel mWheel in pm.part.Modules.OfType<ModuleWheel>())
+                        //{
+                        //    BaseAction whlBrakes = mWheel.Actions.Find(ba => ba.name == "BrakesAction");
+                        //    if ((whlBrakes.actionGroup & KSPActionGroup.Brakes) == KSPActionGroup.Brakes)
+                        //    {
+                        //        whlBrakes.actionGroup &= ~KSPActionGroup.Brakes;
+                        //    }
+                        //    else
+                        //    {
+                        //        whlBrakes.actionGroup = whlBrakes.actionGroup | KSPActionGroup.Brakes;
+                        //    }
+                        //}
                         break;
                     }
                 case 43: //stock sci lab clean experimentsher.

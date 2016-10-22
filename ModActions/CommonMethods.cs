@@ -55,7 +55,7 @@ namespace ModActions
     {
         public void Start()
         {
-            Debug.Log("ModActions Ver. 1.2a Starting.....");
+            Debug.Log("ModActions Ver. 1.3 Starting.....");
             if (!StaticMethods.ListPopulated) //populate our list if this is first load
             {
                 StaticMethods.AllActionsList = new List<ModActionData>();
@@ -98,6 +98,7 @@ namespace ModActions
                     }
                 }
                 StaticMethods.ListPopulated = true;
+                //Debug.Log("ModActs Type Count is " + StaticMethods.pmTypes.Count);
 
                 //foreach (ModActionData md in StaticMethods.AllActionsList) //for debugging, lists all actions
                 //{
@@ -259,14 +260,19 @@ namespace ModActions
             {
                 try
                 {
+                    //Debug.Log("MA 1");
                     if (EditorActionGroups.Instance.GetSelectedParts().First() != lastSelectedPart) //check if selected part has changed
                     {
+                      //  Debug.Log("MA 2");
                         ourWin.SetPart(EditorActionGroups.Instance.GetSelectedParts().First());
+                        //Debug.Log("MA 2a");
                         lastSelectedPart = EditorActionGroups.Instance.GetSelectedParts().First();
+                       // Debug.Log("MA 2b");
                     }
                 }
-                catch //error trap if GetSelecetedParts above is null,
+                catch(Exception e) //error trap if GetSelecetedParts above is null,
                 {
+                    //Debug.Log("MA Get sle parts null " + e);
                     //do nothing, if null nothing should happen
                 }
 

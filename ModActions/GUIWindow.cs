@@ -461,83 +461,117 @@ namespace ModActions
 
         public void SetPart(Part p) //called from Flight or Editor KSPAddons when selected part changes.
         {
-
-            selectedPart = p;
-
-            if (selectedPart != null)
+            string errLine = "1";
+            try
             {
-
-                dataPM = p.Modules.OfType<ModuleModActions>().First();
-                RefreshModNames(true);
-                if(copyMode && copyPart != null)
+                selectedPart = p;
+                errLine = "2";
+                if (selectedPart != null)
                 {
-                    dataPM.modActionsList.Clear();
-                    ModuleModActions copySource = (ModuleModActions) copyPart.Modules["ModuleModActions"];
-                    foreach(KeyValuePair<int,ModActionData> kvp in copySource.modActionsList)
+                    errLine = "3";
+                    dataPM = p.Modules.OfType<ModuleModActions>().First();
+                    RefreshModNames(true);
+                    if (copyMode && copyPart != null)
                     {
-                        if (dataPM.part.Modules.Contains(kvp.Value.ModuleName))
+                        errLine = "4";
+                        dataPM.modActionsList.Clear();
+                        ModuleModActions copySource = (ModuleModActions)copyPart.Modules["ModuleModActions"];
+                        foreach (KeyValuePair<int, ModActionData> kvp in copySource.modActionsList)
                         {
-                            dataPM.modActionsList.Add(kvp.Key, new ModActionData(kvp.Value));
-                        }
-                    }
-                    if(includeSymmetryParts)
-                    {
-                        foreach(Part p3 in dataPM.part.symmetryCounterparts)
-                        {
-                            ModuleModActions symDataPM = (ModuleModActions)p3.Modules["ModuleModActions"];
-                            symDataPM.modActionsList.Clear();
-                            foreach (KeyValuePair<int, ModActionData> kvp in copySource.modActionsList)
+                            if (dataPM.part.Modules.Contains(kvp.Value.ModuleName))
                             {
-                                if (symDataPM.part.Modules.Contains(kvp.Value.ModuleName))
+                                dataPM.modActionsList.Add(kvp.Key, new ModActionData(kvp.Value));
+                            }
+                        }
+                        errLine = "5";
+                        if (includeSymmetryParts)
+                        {
+                            foreach (Part p3 in dataPM.part.symmetryCounterparts)
+                            {
+                                ModuleModActions symDataPM = (ModuleModActions)p3.Modules["ModuleModActions"];
+                                symDataPM.modActionsList.Clear();
+                                foreach (KeyValuePair<int, ModActionData> kvp in copySource.modActionsList)
                                 {
-                                    symDataPM.modActionsList.Add(kvp.Key, new ModActionData(kvp.Value));
+                                    if (symDataPM.part.Modules.Contains(kvp.Value.ModuleName))
+                                    {
+                                        symDataPM.modActionsList.Add(kvp.Key, new ModActionData(kvp.Value));
+                                    }
                                 }
                             }
                         }
                     }
+                    errLine = "6";
+                    copyMode = false;
+                    copyPart = null;
+                    selType = SelectType.None;
                 }
-                copyMode = false;
-                copyPart = null;
-                selType = SelectType.None;
+                else
+                {
+                    errLine = "7";
+                    dataPM = null;
+                    RefreshModNames(false);
+                    selType = SelectType.NoPart;
+                }
             }
-            else
+            catch(Exception e)
             {
-
-                dataPM = null;
-                RefreshModNames(false);
-                selType = SelectType.NoPart;
+                Debug.Log("ModActions GuiWIN SetPart Fail " + errLine + "|" + e);
             }
 
         }
 
         public void RefreshModNames(bool validPart) //update our list of available mods for the selected part, if valid part is false, no part selected, just clear list
         {
-            modNames.Clear();
-            if (validPart)
+            string errLine = "1";
+            try
             {
-                foreach (ModActionData modData in StaticMethods.AllActionsList)
+                modNames.Clear();
+                errLine = "1";
+                if (validPart)
                 {
-                    Type modDataType2 = StaticMethods.pmTypes[modData.ModuleName];
-                    bool addThisModData = false;
-                    //if (selectedPart.Modules.Contains(modData.ModuleName))
-                    foreach (PartModule pm in selectedPart.Modules)
+                    errLine = "2";
+                    foreach (ModActionData modData in StaticMethods.AllActionsList)
                     {
-                        if (modDataType2.IsAssignableFrom(pm.GetType()))
+                        errLine = "3";
+                        Debug.Log("MA " + modData.ModuleName);
+                        //foreach(KeyValuePair<string,Type> kvp in StaticMethods.pmTypes)
+                        //{
+                        //    Debug.Log(kvp.Value.ToString());
+
+                        //}
+                        Type modDataType2 = StaticMethods.pmTypes[modData.ModuleName];
+                        bool addThisModData = false;
+                        //if (selectedPart.Modules.Contains(modData.ModuleName))
+                        foreach (PartModule pm in selectedPart.Modules)
                         {
-                            addThisModData = true;
+                            errLine = "4";
+                            if (modDataType2.IsAssignableFrom(pm.GetType()))
+                            {
+                                errLine = "5";
+                                addThisModData = true;
+                            }
+                        }
+                        errLine = "6";
+                        if (addThisModData)
+                        {
+                            errLine = "7";
+                            if (!modNames.Contains(modData.Name))
+                            {
+                                errLine = "8";
+                                modNames.Add(modData.Name);
+                            }
                         }
                     }
-                    if (addThisModData)
-                    {
-                        if (!modNames.Contains(modData.Name))
-                        {
-                            modNames.Add(modData.Name);
-                        }
-                    }
+                    errLine = "9";
+                    modNames.Sort();
                 }
-                modNames.Sort();
+                errLine = "10";
+                modNames.Insert(0, "Clear Action"); //clear action always comes first
             }
-            modNames.Insert(0, "Clear Action"); //clear action always comes first
+            catch(Exception e)
+            {
+                Debug.Log("ModActs GUI RefreshModNames fail " + errLine + "|" + e);
+            }
 
         }
 
