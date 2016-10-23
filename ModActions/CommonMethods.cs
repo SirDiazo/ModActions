@@ -55,7 +55,7 @@ namespace ModActions
     {
         public void Start()
         {
-            Debug.Log("ModActions Ver. 1.3 Starting.....");
+            Debug.Log("ModActions Ver. 1.3a Starting.....");
             if (!StaticMethods.ListPopulated) //populate our list if this is first load
             {
                 StaticMethods.AllActionsList = new List<ModActionData>();
@@ -168,7 +168,7 @@ namespace ModActions
 
         public void onStockToolbarClick()
         {
-            Debug.Log("Modacts buton clik");
+            //Debug.Log("Modacts buton clik");
             showWin = !showWin;
             if (ourWin != null)
             {
