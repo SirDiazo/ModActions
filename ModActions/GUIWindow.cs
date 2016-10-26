@@ -382,6 +382,7 @@ namespace ModActions
                                 GUI.backgroundColor = GUIbackup;
                                 if (origString != dataPM.modActionsList[i].ActionValue)
                                 {
+                                    
                                     SyncSymmetry(dataPM.part, dataPM.modActionsList[i], i);
                                 }
                             }
@@ -533,7 +534,7 @@ namespace ModActions
                     foreach (ModActionData modData in StaticMethods.AllActionsList)
                     {
                         errLine = "3";
-                        Debug.Log("MA " + modData.ModuleName);
+                        //Debug.Log("MA " + modData.ModuleName);
                         //foreach(KeyValuePair<string,Type> kvp in StaticMethods.pmTypes)
                         //{
                         //    Debug.Log(kvp.Value.ToString());
@@ -713,21 +714,29 @@ namespace ModActions
 
         public void SyncSymmetry(Part p, ModActionData modData, int actID)
         {
+            //Debug.Log("MA Sync sym called " + p.symmetryCounterparts.Count + "|" + p.partName + "|" +actID + "|" + modData.ToString());
             foreach (Part symP in p.symmetryCounterparts)
             {
+                //Debug.Log("MA1");
                 ModuleModActions symPM = symP.Modules.OfType<ModuleModActions>().First();
                 if (modData == null && symPM.modActionsList.ContainsKey(actID))
                 {
+                    //Debug.Log("MA2");
                     symPM.modActionsList.Remove(actID);
+                    symPM.Actions.Find(ba => ba.name == "Action" + actID.ToString()).active = false;
+                    //symPM.Actions.Where()
                 }
                 else if (modData != null)
                 {
+                    //Debug.Log("MA3");
                     if (symPM.modActionsList.ContainsKey(actID))
                     {
+                        //Debug.Log("MA5");
                         symPM.modActionsList.Remove(actID);
-                    }
+                    } 
                     symPM.modActionsList.Add(actID, new ModActionData(modData));
                     symPM.Actions.Where(a => a.name == "Action" + actID).First().guiName = new string(modData.Description.ToCharArray());
+                    symPM.Actions.Find(ba => ba.name == "Action" + actID.ToString()).active = true;
                 }
                 // symPM.modActionsList[i] = new ModActionData(dataPM.modActionsList[i]);
                 //symPM.Actions.Where(a => a.name == "Action" + i).First().guiName = new string(s)

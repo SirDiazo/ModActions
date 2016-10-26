@@ -1187,6 +1187,166 @@ namespace ModActions
                         }
                         break;
                     }
+                case 95: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.thrustPercentage = float.Parse(val);
+                        }
+                        break;
+                    }
+                case 96: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.thrustPercentage = pm2.thrustPercentage + float.Parse(val);
+                        }
+                        break;
+                    }
+                case 97: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableRoll = true;
+                        }
+                        break;
+                    }
+                case 98: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableRoll = false;
+                        }
+                        break;
+                    }
+                case 99: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableRoll = !pm2.enableRoll;
+                        }
+                        break;
+                    }
+                case 100: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enablePitch = true;
+                        }
+                        break;
+                    }
+                case 101: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enablePitch = false;
+                        }
+                        break;
+                    }
+                case 102: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enablePitch = !pm2.enablePitch;
+                        }
+                        break;
+                    }
+                case 103: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableYaw = true;
+                        }
+                        break;
+                    }
+                case 104: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableYaw = false;
+                        }
+                        break;
+                    }
+                case 105: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableYaw = !pm2.enableYaw;
+                        }
+                        break;
+                    }
+                case 106: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableX = true;
+                        }
+                        break;
+                    }
+                case 107: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableX = false;
+                        }
+                        break;
+                    }
+                case 108: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableX = !pm2.enableX;
+                        }
+                        break;
+                    }
+                case 109: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableY = true;
+                        }
+                        break;
+                    }
+                case 110: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableY = false;
+                        }
+                        break;
+                    }
+                case 111: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableY = !pm2.enableY;
+                        }
+                        break;
+                    }
+                case 112: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableZ = true;
+                        }
+                        break;
+                    }
+                case 113: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableZ = false;
+                        }
+                        break;
+                    }
+                case 114: //RCS
+                    {
+                        foreach (ModuleRCS pm2 in pm.part.Modules.OfType<ModuleRCS>())
+                        {
+                            pm2.enableZ = !pm2.enableZ;
+                        }
+                        break;
+                    }
             } //close switch bracket
             MonoBehaviorMethods.resetPartWindows();
         }

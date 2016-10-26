@@ -55,7 +55,7 @@ namespace ModActions
     {
         public void Start()
         {
-            Debug.Log("ModActions Ver. 1.3a Starting.....");
+            Debug.Log("ModActions Ver. 1.4 Starting.....");
             if (!StaticMethods.ListPopulated) //populate our list if this is first load
             {
                 StaticMethods.AllActionsList = new List<ModActionData>();
@@ -263,10 +263,14 @@ namespace ModActions
                     //Debug.Log("MA 1");
                     if (EditorActionGroups.Instance.GetSelectedParts().First() != lastSelectedPart) //check if selected part has changed
                     {
-                      //  Debug.Log("MA 2");
+                       //Debug.Log("MA 2");
+                       foreach (Part p in EditorActionGroups.Instance.GetSelectedParts())
+                       {
+                           //Debug.Log("MA " + p.ToString() + "|" + EditorActionGroups.Instance.GetSelectedParts().Count);
+                       }
                         ourWin.SetPart(EditorActionGroups.Instance.GetSelectedParts().First());
                         //Debug.Log("MA 2a");
-                        lastSelectedPart = EditorActionGroups.Instance.GetSelectedParts().First();
+                        lastSelectedPart = EditorActionGroups.Instance.GetSelectedParts().First(); 
                        // Debug.Log("MA 2b");
                     }
                 }
@@ -287,6 +291,14 @@ namespace ModActions
             {
                 ourWin.Update();
             }
+            //foreach(Part p in EditorLogic.SortedShipList)
+            //{
+            //    Debug.Log("MA start");
+            //    if(p.Modules.Contains<ModuleRCS>())
+            //    {
+            //        Debug.Log("MA " + p.Modules.OfType<ModuleModActions>().First().modActionsList.Count);
+            //    }
+            //}
         }
     }
 
