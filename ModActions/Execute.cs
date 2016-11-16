@@ -1347,6 +1347,63 @@ namespace ModActions
                         }
                         break;
                     }
+                case 115: //toggle auto struts
+                    {
+                        if(pm.part.autoStrutMode == Part.AutoStrutMode.Off && pm.part.Modules.OfType<ModuleModActions>().First().partAutoStrutMode != Part.AutoStrutMode.Off)
+                        { //autostruts are off, a mode is saved on this part, toggle struts on
+                            pm.part.autoStrutMode = pm.part.Modules.OfType<ModuleModActions>().First().partAutoStrutMode;
+                            pm.part.UpdateAutoStrut();
+                        }
+                        else if(pm.part.autoStrutMode != Part.AutoStrutMode.Off)
+                        { //struts are on, toggle them off, saving mode
+                            pm.part.Modules.OfType<ModuleModActions>().First().partAutoStrutMode = pm.part.autoStrutMode;
+                            pm.part.autoStrutMode = Part.AutoStrutMode.Off;
+                            pm.part.UpdateAutoStrut();
+                        }
+                        else if(pm.part.autoStrutMode == Part.AutoStrutMode.Off)
+                        {//struts are off, no saved struts mode, default to heaviest mode.
+                            pm.part.Modules.OfType<ModuleModActions>().First().partAutoStrutMode = Part.AutoStrutMode.Heaviest;
+                            pm.part.autoStrutMode = Part.AutoStrutMode.Heaviest;
+                            pm.part.UpdateAutoStrut();
+                            Debug.Log("Modactions: No saved AutoStrut mode, defaulting to Heaviest");
+                        }
+                        else
+                        {
+                            Debug.Log("Modactions: AutoStrut critical fail, please bug report");
+                        }
+                        break;
+                    }
+                case 116: //auto struts off
+                    {
+                        if (pm.part.autoStrutMode != Part.AutoStrutMode.Off)
+                        { //only save mode if it's not type Off
+                            pm.part.Modules.OfType<ModuleModActions>().First().partAutoStrutMode = pm.part.autoStrutMode;
+                        }
+                        pm.part.autoStrutMode = Part.AutoStrutMode.Off;
+                        pm.part.UpdateAutoStrut();
+                        break;
+                    }
+                case 117: //autostrut heaviest
+                    {
+                        pm.part.Modules.OfType<ModuleModActions>().First().partAutoStrutMode = Part.AutoStrutMode.Heaviest;
+                        pm.part.autoStrutMode = Part.AutoStrutMode.Heaviest;
+                        pm.part.UpdateAutoStrut();
+                        break;
+                    }
+                case 118: //autostrut root
+                    {
+                        pm.part.Modules.OfType<ModuleModActions>().First().partAutoStrutMode = Part.AutoStrutMode.Root;
+                        pm.part.autoStrutMode = Part.AutoStrutMode.Root;
+                        pm.part.UpdateAutoStrut();
+                        break;
+                    }
+                case 119: //autostrut grandparent
+                    {
+                        pm.part.Modules.OfType<ModuleModActions>().First().partAutoStrutMode = Part.AutoStrutMode.Grandparent;
+                        pm.part.autoStrutMode = Part.AutoStrutMode.Grandparent;
+                        pm.part.UpdateAutoStrut();
+                        break;
+                    }
             } //close switch bracket
             MonoBehaviorMethods.resetPartWindows();
         }

@@ -55,7 +55,7 @@ namespace ModActions
     {
         public void Start()
         {
-            Debug.Log("ModActions Ver. 1.4 Starting.....");
+            Debug.Log("ModActions Ver. 1.4a Starting.....");
             if (!StaticMethods.ListPopulated) //populate our list if this is first load
             {
                 StaticMethods.AllActionsList = new List<ModActionData>();
@@ -299,6 +299,13 @@ namespace ModActions
             //        Debug.Log("MA " + p.Modules.OfType<ModuleModActions>().First().modActionsList.Count);
             //    }
             //}
+            //foreach(Part p in EditorLogic.SortedShipList)
+            //{
+            //    foreach(PartModule pm in p.Modules)
+            //    {
+            //        Debug.Log("MA " + p.partName + "|" + pm.moduleName);
+            //    }
+            //}
         }
     }
 
@@ -316,6 +323,7 @@ namespace ModActions
         ApplicationLauncherButton ModActsFlightButton;
         float lastUpdateTime;
         public bool showKSPui = true;
+        bool showBtn = true;
 
         public void Start()
         {
@@ -323,41 +331,65 @@ namespace ModActions
             settings = ConfigNode.Load(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.settings");
             winTop = float.Parse(settings.GetValue("FltWinTop"));
             winLeft = float.Parse(settings.GetValue("FltWinLeft"));
-            if (ToolbarManager.ToolbarAvailable) //check if toolbar available, load if it is
+            if(int.Parse(settings.GetValue("FlightBtnVis"))==0) //0 hide win, 1 show win, 2 (or any other value) only show if agx installed
             {
-
-                MABtn = ToolbarManager.Instance.add("ModActs", "MABtn");
-                MABtn.TexturePath = "Diazo/ModActions/Btn";
-                MABtn.ToolTip = "Mod Actions";
-                MABtn.OnClick += (e) =>
-                {
-                    ShowModActs = !ShowModActs;
-                    if (ShowModActs)
-                    {
-                        if (ourWin == null)
-                        {
-                            ourWin = new MainGUIWindow(FlightGlobals.ActiveVessel.Parts, winTop, winLeft, showKSPui);
-                        }
-                        ourWin.SetPart(null);
-                        lastSelectedPart = null;
-                        ourWin.drawWin = ShowModActs;
-                    }
-                    else
-                    {
-                        if (ourWin != null)
-                        {
-                            ourWin.drawWin = false;
-                            //ourWin.Kill();
-                            ourWin = null;
-                        }
-                    }
-                };
+                showBtn = false;
+            }
+            else if(int.Parse(settings.GetValue("FlightBtnVis")) == 1)
+            {
+                showBtn = true;
             }
             else
             {
-                //now using stock toolbar as fallback
-                //ModActsFlightButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.FLIGHT, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActions/BtnStock", false));
-                StartCoroutine("AddButtons");
+                showBtn = false;
+                foreach (AssemblyLoader.LoadedAssembly Asm in AssemblyLoader.loadedAssemblies)
+                {
+                    if (Asm.dllName == "AGExt")
+                    {
+                        //Debug.Log("RemoteTech found");
+                        //AGXRemoteTechQueue.Add(new AGXRemoteTechQueueItem(group, FlightGlobals.ActiveVessel.rootPart.flightID, Planetarium.GetUniversalTime() + 10, force, forceDir));
+                        showBtn = true;
+                    }
+                }
+            }
+            if (showBtn)
+            {
+                if (ToolbarManager.ToolbarAvailable) //check if toolbar available, load if it is
+                {
+
+                    MABtn = ToolbarManager.Instance.add("ModActs", "MABtn");
+                    MABtn.TexturePath = "Diazo/ModActions/Btn";
+                    MABtn.ToolTip = "Mod Actions";
+                    MABtn.OnClick += (e) =>
+                    {
+                        ShowModActs = !ShowModActs;
+                        if (ShowModActs)
+                        {
+                            if (ourWin == null)
+                            {
+                                ourWin = new MainGUIWindow(FlightGlobals.ActiveVessel.Parts, winTop, winLeft, showKSPui);
+                            }
+                            ourWin.SetPart(null);
+                            lastSelectedPart = null;
+                            ourWin.drawWin = ShowModActs;
+                        }
+                        else
+                        {
+                            if (ourWin != null)
+                            {
+                                ourWin.drawWin = false;
+                            //ourWin.Kill();
+                            ourWin = null;
+                            }
+                        }
+                    };
+                }
+                else
+                {
+                    //now using stock toolbar as fallback
+                    //ModActsFlightButton = ApplicationLauncher.Instance.AddModApplication(onStockToolbarClick, onStockToolbarClick, DummyVoid, DummyVoid, DummyVoid, DummyVoid, ApplicationLauncher.AppScenes.FLIGHT, (Texture)GameDatabase.Instance.GetTexture("Diazo/ModActions/BtnStock", false));
+                    StartCoroutine("AddButtons");
+                }
             }
             GameEvents.onHideUI.Add(onHideMyUI);
             GameEvents.onShowUI.Add(onShowMyUI);

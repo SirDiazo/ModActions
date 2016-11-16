@@ -540,16 +540,24 @@ namespace ModActions
                         //    Debug.Log(kvp.Value.ToString());
 
                         //}
-                        Type modDataType2 = StaticMethods.pmTypes[modData.ModuleName];
+                        
                         bool addThisModData = false;
                         //if (selectedPart.Modules.Contains(modData.ModuleName))
-                        foreach (PartModule pm in selectedPart.Modules)
+                        if (modData.ModuleName == "All")
                         {
-                            errLine = "4";
-                            if (modDataType2.IsAssignableFrom(pm.GetType()))
+                            addThisModData = true;
+                        }
+                        else
+                        {
+                            Type modDataType2 = StaticMethods.pmTypes[modData.ModuleName];
+                            foreach (PartModule pm in selectedPart.Modules)
                             {
-                                errLine = "5";
-                                addThisModData = true;
+                                errLine = "4";
+                                if (modDataType2.IsAssignableFrom(pm.GetType()))
+                                {
+                                    errLine = "5";
+                                    addThisModData = true;
+                                }
                             }
                         }
                         errLine = "6";

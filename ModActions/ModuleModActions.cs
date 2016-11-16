@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,9 @@ namespace ModActions
         
         public Dictionary<int,ModActionData> modActionsList; //list of modactions assigned on this part
 
+        [KSPField(guiActive = false, guiActiveEditor = false, isPersistant = true)]
+        public Part.AutoStrutMode partAutoStrutMode = Part.AutoStrutMode.Off;
+
         public override void OnStart(StartState state)
         {
             if (modActionsList == null)
@@ -47,8 +51,25 @@ namespace ModActions
                     this.Actions.Where(a => a.name == "Action" + i).First().active = false;
                 }
             }
+
+            if(HighLogic.LoadedSceneIsFlight)
+            {
+                StartCoroutine("AutoStrutType");
+            }
         }
-        
+
+        IEnumerator AutoStrutType()
+        {
+            while (!this.vessel.HoldPhysics)
+            {
+                yield return null;
+            }
+            if (this.part.autoStrutMode != Part.AutoStrutMode.Off)
+            {
+                partAutoStrutMode = part.autoStrutMode;
+            }
+        }
+
         public override void OnLoad(ConfigNode node)
         {
             modActionsList = new Dictionary<int, ModActionData>(); //initialise our list, if already initialise this serves to clear it
