@@ -1404,6 +1404,21 @@ namespace ModActions
                         pm.part.UpdateAutoStrut();
                         break;
                     }
+                case 120: //saturable reaction wheel enable fuel cancel enable
+                    {
+                        pm.part.Modules["RWSaturatable"].GetType().GetField("bConsumeResource").SetValue(pm.part.Modules["RWSaturatable"], true);
+                        break;
+                    }
+                case 121: //saturable reaction wheel enable fuel cancel disable
+                    {
+                        pm.part.Modules["RWSaturatable"].GetType().GetField("bConsumeResource").SetValue(pm.part.Modules["RWSaturatable"], false);
+                        break;
+                    }
+                case 122: //saturable reaction wheel enable fuel cancel toggle
+                    {
+                        pm.part.Modules["RWSaturatable"].GetType().GetField("bConsumeResource").SetValue(pm.part.Modules["RWSaturatable"], !(bool)pm.part.Modules["RWSaturatable"].GetType().GetField("bConsumeResource").GetValue(pm.part.Modules["RWSaturatable"]));
+                        break;
+                    }
             } //close switch bracket
             MonoBehaviorMethods.resetPartWindows();
         }
