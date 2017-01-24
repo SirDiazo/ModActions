@@ -1419,6 +1419,32 @@ namespace ModActions
                         pm.part.Modules["RWSaturatable"].GetType().GetField("bConsumeResource").SetValue(pm.part.Modules["RWSaturatable"], !(bool)pm.part.Modules["RWSaturatable"].GetType().GetField("bConsumeResource").GetValue(pm.part.Modules["RWSaturatable"]));
                         break;
                     }
+                case 123: //set friction strength
+                    {
+                        float setVal = 0f;
+                        if (float.TryParse(val, out setVal))
+                        {
+                            setVal = Mathf.Clamp(setVal, 0f, 5f);
+                            foreach (ModuleWheelBase pm2 in pm.part.Modules.OfType<ModuleWheelBase>())
+                            {
+                                pm2.frictionMultiplier = setVal;
+                            }
+                        }
+                        break;
+                    }
+                case 124: //chnage friction strength
+                    {
+                        float setVal = 0f;
+                        if (float.TryParse(val, out setVal))
+                        {
+                            foreach (ModuleWheelBase pm2 in pm.part.Modules.OfType<ModuleWheelBase>())
+                            {
+                                float tempVal = pm2.frictionMultiplier + setVal;
+                                pm2.frictionMultiplier = Mathf.Clamp(tempVal, 0f, 5f);
+                            }
+                        }
+                        break;
+                    }
             } //close switch bracket
             MonoBehaviorMethods.resetPartWindows();
         }
