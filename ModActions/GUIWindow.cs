@@ -35,6 +35,7 @@ namespace ModActions
         public bool copyMode;
         Part copyPart;
         public bool showKSPui = true;
+        
 
 
         public MainGUIWindow(List<Part> prts, float winTop, float winLeft, bool showingKSPui) //effectively our Start() method
@@ -756,25 +757,49 @@ namespace ModActions
 
     class StaticMethodsUnity : PartModule
     {
-        public static void RefreshAGXEditor() //mess of reflection to update AGX if present.
+        public static void RefreshAGXEditor() //move to using new GameEvents system from KSP 1.2
         {
-            Type linkType = Type.GetType("ActionGroupsExtended.AGXEditor, AGExt");
-            if (linkType != null)
+            EventData<string> AGExtRefreshActions = GameEvents.FindEvent<EventData<string>>("AGExtRefreshActionsEvent");
+            if(AGExtRefreshActions!= null)
             {
-                object[] linkObjs = FindObjectsOfType(linkType);
-                linkType.InvokeMember("RefreshPartActions", BindingFlags.InvokeMethod | BindingFlags.Public, null, linkObjs.First(), null);
+                AGExtRefreshActions.Fire(null);
             }
-        }
 
-        public static void RefreshAGXFlight() //mess of reflection to update AGX if present.
+        }//mess of reflection to update AGX if present.
+        //{
+        //    private EventData<string> AGExtEventRefreshActions;
+    
+        //AGExtEventRefreshActions = GameEvents.FindEvent<EventData<string>>("AGExtEventRefreshActionsEvent");
+        //AGExtEventRefreshActions.Fire();
+
+        //don't forget to remove them in OnDestroy:
+        //if (onKerbalFrozenEvent != null) onKerbalFrozenEvent.Remove(onKerbalFrozen);
+        //Type linkType = Type.GetType("ActionGroupsExtended.AGXEditor, AGExt");
+        //if (linkType != null)
+        //{
+        //    object[] linkObjs = FindObjectsOfType(linkType);
+        //    linkType.InvokeMember("RefreshPartActions", BindingFlags.InvokeMethod | BindingFlags.Public, null, linkObjs.First(), null);
+        //}
+
+        //}
+    
+        public static void RefreshAGXFlight() //mess of reflection to update AGX if present, use new gameEvents system from KSP 1.2 now.
         {
-            Type linkType = Type.GetType("ActionGroupsExtended.AGXFlight, AGExt");
-            if (linkType != null)
-            {
-                object[] linkObjs = FindObjectsOfType(linkType);
-                Debug.Log("Link " + linkObjs.First().GetType());
-                linkType.InvokeMember("RefreshPartActions", BindingFlags.InvokeMethod | BindingFlags.Public, null, linkObjs.First(), null);
-            }
+            
+                EventData<string> AGExtRefreshActions = GameEvents.FindEvent<EventData<string>>("AGExtRefreshActionsEvent");
+                if (AGExtRefreshActions != null)
+                {
+                    AGExtRefreshActions.Fire(null);
+                }
+
+            
+            //Type linkType = Type.GetType("ActionGroupsExtended.AGXFlight, AGExt");
+            //if (linkType != null)
+            //{
+            //    object[] linkObjs = FindObjectsOfType(linkType);
+            //    Debug.Log("Link " + linkObjs.First().GetType());
+            //    linkType.InvokeMember("RefreshPartActions", BindingFlags.InvokeMethod | BindingFlags.Public, null, linkObjs.First(), null);
+            //}
         }
     }
     enum SelectType

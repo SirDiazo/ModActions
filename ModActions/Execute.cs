@@ -184,11 +184,13 @@ namespace ModActions
                 case 9: //stock command RCS on
                     {
                         pm.vessel.ActionGroups.SetGroup(KSPActionGroup.RCS, true);
+                        //EventTest.CallEvent();
                         break;
                     }
                 case 10: //stock command RCS off
                     {
                         pm.vessel.ActionGroups.SetGroup(KSPActionGroup.RCS, false);
+                        //EventTest.PrintContainer();
                         break;
                     }
                 case 11: //stock command RCS toggle

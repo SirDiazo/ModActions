@@ -55,7 +55,7 @@ namespace ModActions
     {
         public void Start()
         {
-            Debug.Log("ModActions Ver. 1.4b Starting.....");
+            Debug.Log("ModActions Ver. 1.6 Starting.....");
             if (!StaticMethods.ListPopulated) //populate our list if this is first load
             {
                 StaticMethods.AllActionsList = new List<ModActionData>();
@@ -310,6 +310,68 @@ namespace ModActions
     }
 
     [KSPAddon(KSPAddon.Startup.Flight, false)]
+    public class EventTest : PartModule
+    {
+        public static List<EventTestListClass> testListContainer;
+        public static Dictionary<Guid, Dictionary<int, bool>> testDict;
+
+        public void Start()
+        {
+            testListContainer = new List<EventTestListClass>();
+        }
+
+        public static void CallEvent()
+        {
+            testDict = new Dictionary<Guid, Dictionary<int, bool>>();
+            Debug.Log("MA Call event start");
+            EventData<Action<Dictionary<Guid, Dictionary<int, bool>>>> MA2testEvent = GameEvents.FindEvent<EventData<Action<Dictionary<Guid, Dictionary<int, bool>>>>>("onTestEvent");
+            List<float> tempList = new List<float>();
+            MA2testEvent.Fire(linkOverEvent);
+            //testListContainer.Add(new EventTestListClass(Time.realtimeSinceStartup, tempList));
+            Debug.Log("MA Call event end " + testDict.Count);
+        }
+
+        public static void linkOverEvent(Dictionary<Guid, Dictionary<int, bool>> toLink)
+        {
+            testDict = toLink;
+        }
+
+        public static void PrintContainer()
+        {
+            Debug.Log("MA container print start " + Time.realtimeSinceStartup + testListContainer.Count);
+            for(int i = 0;i< testDict.Count; i++)
+            {
+                Debug.Log("MA entry " + i + "|" + testDict.ElementAt(i).Key.ToString() + "|" + testDict.ElementAt(i).Value.ToString());
+                //foreach (float fl in testListContainer[i].numList)
+                //{
+                //    Debug.Log("MA entry sub " + testListContainer[i].initTime + "|" + fl);
+                //}
+            }
+            Debug.Log("MA Container print end");
+
+        }
+        
+
+    }
+
+    public class EventTestListClass //use for event testing
+    {
+        public List<float> numList;
+        public float initTime;
+
+        public EventTestListClass()
+        {
+            numList = new List<float>();
+            initTime = Time.realtimeSinceStartup;
+        }
+        public EventTestListClass(float tmr, List<float> tempList)
+        {
+            numList = tempList;
+            initTime = tmr;
+        }
+    }
+
+        [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class ModActionsFlight : PartModule
     {
         private bool buttonCreated = false;
@@ -325,9 +387,11 @@ namespace ModActions
         public bool showKSPui = true;
         bool showBtn = true;
 
+        
+
         public void Start()
         {
-
+           
             settings = ConfigNode.Load(KSPUtil.ApplicationRootPath + "GameData/Diazo/ModActions/ModActions.settings");
             winTop = float.Parse(settings.GetValue("FltWinTop"));
             winLeft = float.Parse(settings.GetValue("FltWinLeft"));
